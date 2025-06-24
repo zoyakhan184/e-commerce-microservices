@@ -1,0 +1,86 @@
+  - path: /docker-compose.yml
+    type: file
+  - path: /services
+    type: directory
+    contents:
+    - path: /services/user-service
+      type: directory
+      contents:
+      - path: /services/user-service/go.sum
+        type: file
+      - path: /services/user-service/Dockerfile
+        type: file
+      - path: /services/user-service/cmd
+        type: directory
+        contents:
+        - path: /services/user-service/cmd/server
+          type: directory
+          contents:
+          - path: /services/user-service/cmd/server/main.go
+            type: file
+      - path: /services/user-service/internal
+        type: directory
+        contents:
+        - path: /services/user-service/internal/repository
+          type: directory
+          contents:
+          - path: /services/user-service/internal/repository/user_repo.go
+            type: file
+        - path: /services/user-service/internal/models
+          type: directory
+          contents:
+          - path: /services/user-service/internal/models/user.go
+            type: file
+        - path: /services/user-service/internal/service
+          type: directory
+          contents:
+          - path: /services/user-service/internal/service/user_service.go
+            type: file
+      - path: /services/user-service/proto
+        type: directory
+        contents:
+        - path: /services/user-service/proto/user_service_grpc.pb.go
+          type: file
+        - path: /services/user-service/proto/user_service.pb.go
+          type: file
+      - path: /services/user-service/go.mod
+        type: file
+  - path: /bff
+    type: directory
+    contents:
+    - path: /bff/go.sum
+      type: file
+    - path: /bff/Dockerfile
+      type: file
+    - path: /bff/cmd
+      type: directory
+      contents:
+      - path: /bff/cmd/server
+        type: directory
+        contents:
+        - path: /bff/cmd/server/main.go
+          type: file
+    - path: /bff/internal
+      type: directory
+      contents:
+      - path: /bff/internal/handlers
+        type: directory
+        contents:
+        - path: /bff/internal/handlers/user_handler.go
+          type: file
+      - path: /bff/internal/clients
+        type: directory
+        contents:
+        - path: /bff/internal/clients/grpc_client.go
+          type: file
+    - path: /bff/proto
+      type: directory
+      contents:
+      - path: /bff/proto/user_service_grpc.pb.go
+        type: file
+      - path: /bff/proto/user_service.pb.go
+        type: file
+      - path: /bff/proto/user_service.proto
+        type: file
+    - path: /bff/go.mod
+      type: file

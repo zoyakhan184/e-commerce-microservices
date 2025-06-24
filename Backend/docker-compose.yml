@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: users
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  user-service:
+    build:
+      context: .
+      dockerfile: ./services/user-service/Dockerfile
+    ports:
+      - "50051:50051"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: users
+      DB_PORT: 5432
+    restart: unless-stopped
+
+  bff:
+    build:
+      context: .
+      dockerfile: ./bff/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+    environment:
+      USER_SERVICE_HOST: user-service
+      USER_SERVICE_PORT: 50051
+    restart: unless-stopped
+
+volumes:
+  pg_data:
