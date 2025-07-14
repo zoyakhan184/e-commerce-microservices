@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package notification;
+
+option go_package = "notification-service/proto;notificationpb";
+
+
+service NotificationService {
+  rpc SendEmail(EmailRequest) returns (GenericResponse);
+  rpc SendBulkEmail(BulkEmailRequest) returns (GenericResponse);
+}
+
+message EmailRequest {
+  string user_id = 1;
+  string to = 2;
+  string subject = 3;
+  string body = 4;
+}
+
+message BulkEmailRequest {
+  repeated string to_list = 1;
+  string subject = 2;
+  string body = 3;
+}
+
+message GenericResponse {
+  string status = 1;
+}

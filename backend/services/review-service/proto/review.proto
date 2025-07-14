@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package review;
+
+option go_package = "review-service/proto;reviewpb";
+
+
+service ReviewService {
+  rpc AddReview(AddReviewRequest) returns (GenericResponse);
+  rpc GetReviews(GetReviewsRequest) returns (GetReviewsResponse);
+  rpc EditReview(EditReviewRequest) returns (GenericResponse);
+  rpc DeleteReview(DeleteReviewRequest) returns (GenericResponse);
+}
+
+message AddReviewRequest {
+  string user_id = 1;
+  string product_id = 2;
+  int32 rating = 3;
+  string comment = 4;
+}
+
+message GetReviewsRequest {
+  string product_id = 1;
+}
+
+message EditReviewRequest {
+  string review_id = 1;
+  int32 rating = 2;
+  string comment = 3;
+}
+
+message DeleteReviewRequest {
+  string review_id = 1;
+}
+
+message GenericResponse {
+  string status = 1;
+}
+
+message Review {
+  string id = 1;
+  string user_id = 2;
+  string product_id = 3;
+  int32 rating = 4;
+  string comment = 5;
+}
+
+message GetReviewsResponse {
+  repeated Review reviews = 1;
+}

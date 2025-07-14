@@ -1,0 +1,43 @@
+  - path: /repository
+    type: directory
+    contents:
+    - path: /repository/image_repo.go
+      type: file
+  - path: /handlers
+    type: directory
+    contents:
+    - path: /handlers/image_handler.go
+      type: file
+  - path: /go.sum
+    type: file
+  - path: /models
+    type: directory
+    contents:
+    - path: /models/image.go
+      type: file
+  - path: /main.go
+    type: file
+  - path: /proto
+    type: directory
+    contents:
+    - path: /proto/image_grpc.pb.go
+      type: file
+    - path: /proto/image.pb.go
+      type: file
+    - path: /proto/image.proto
+      type: file
+  - path: /uploads
+    type: directory
+    contents:
+    - path: /uploads/341b53f1-4672-4138-9f8e-7e72b8e06559.jpg
+      type: file
+    - path: /uploads/96f88423-c5c7-49c1-860b-3711877e1751.jpg
+      type: file
+    - path: /uploads/7a18d386-971a-4b58-b248-06203fbf81eb.jpg
+      type: file
+    - path: /uploads/4b43cedc-9977-4cd9-8c47-c4e400b41dea.jpg
+      type: file
+    - path: /uploads/02c5b0e4-9655-4a32-9ea9-b46e8577102b.jpg
+      type: file
+  - path: /go.mod
+    type: file

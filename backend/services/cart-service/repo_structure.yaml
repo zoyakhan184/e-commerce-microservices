@@ -1,0 +1,32 @@
+  - path: /repository
+    type: directory
+    contents:
+    - path: /repository/interface.go
+      type: file
+    - path: /repository/cart_pg.go
+      type: file
+  - path: /handlers
+    type: directory
+    contents:
+    - path: /handlers/cart.go
+      type: file
+  - path: /go.sum
+    type: file
+  - path: /models
+    type: directory
+    contents:
+    - path: /models/cart.go
+      type: file
+  - path: /main.go
+    type: file
+  - path: /proto
+    type: directory
+    contents:
+    - path: /proto/cart.pb.go
+      type: file
+    - path: /proto/cart_grpc.pb.go
+      type: file
+    - path: /proto/cart.proto
+      type: file
+  - path: /go.mod
+    type: file

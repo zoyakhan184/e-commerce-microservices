@@ -1,0 +1,43 @@
+  - path: /repository
+    type: directory
+    contents:
+    - path: /repository/global.go
+      type: file
+    - path: /repository/user_repository.go
+      type: file
+    - path: /repository/user_pg.go
+      type: file
+  - path: /handlers
+    type: directory
+    contents:
+    - path: /handlers/user.go
+      type: file
+  - path: /go.sum
+    type: file
+  - path: /rabbitmq
+    type: directory
+    contents:
+    - path: /rabbitmq/consumer.go
+      type: file
+  - path: /models
+    type: directory
+    contents:
+    - path: /models/wishlist.go
+      type: file
+    - path: /models/profile.go
+      type: file
+    - path: /models/address.go
+      type: file
+  - path: /main.go
+    type: file
+  - path: /proto
+    type: directory
+    contents:
+    - path: /proto/user.proto
+      type: file
+    - path: /proto/user_grpc.pb.go
+      type: file
+    - path: /proto/user.pb.go
+      type: file
+  - path: /go.mod
+    type: file

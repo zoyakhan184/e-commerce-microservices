@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "product-service/proto;productpb";
+
+service ProductService {
+  rpc AddProduct(ProductRequest) returns (GenericResponse);
+  rpc EditProduct(ProductUpdateRequest) returns (GenericResponse);
+  rpc DeleteProduct(ProductIdRequest) returns (GenericResponse);
+  rpc GetProduct(ProductIdRequest) returns (ProductResponse);
+  rpc ListProducts(ProductFilter) returns (ProductList);
+
+  rpc AddCategory(CategoryRequest) returns (GenericResponse);
+  rpc ListCategories(Empty) returns (CategoryList);
+}
+
+// =================== Product Messages ===================
+
+message ProductRequest {
+  string name = 1;
+  string description = 2;
+  string category_id = 3;
+  double price = 4;
+  string brand = 5;
+  repeated string image_urls = 6;
+}
+
+message ProductUpdateRequest {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string category_id = 4;
+  double price = 5;
+  string brand = 6;
+}
+
+message ProductIdRequest {
+  string id = 1;
+}
+
+message ProductResponse {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string category_id = 4;
+  double price = 5;
+  string brand = 6;
+  repeated string image_urls = 7;
+}
+
+message ProductList {
+  repeated ProductResponse products = 1;
+}
+
+message ProductFilter {
+  string category_id = 1;
+  string brand = 2;
+}
+
+// =================== Category Messages ===================
+
+message CategoryRequest {
+  string name = 1;
+  string gender = 2;
+  string parent_id = 3;
+}
+
+message CategoryResponse {
+  string id = 1;
+  string name = 2;
+  string gender = 3;
+  string parent_id = 4;
+}
+
+message CategoryList {
+  repeated CategoryResponse categories = 1;
+}
+
+// =================== Shared ===================
+
+message GenericResponse {
+  string message = 1;
+}
+
+message Empty {}

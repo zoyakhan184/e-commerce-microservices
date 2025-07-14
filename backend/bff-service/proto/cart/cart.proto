@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package cart;
+
+option go_package = "cart-service/proto;cartpb";
+
+service CartService {
+  rpc AddToCart(CartItem) returns (GenericResponse);
+  rpc RemoveFromCart(CartRequest) returns (GenericResponse);
+  rpc UpdateCartItem(CartUpdateRequest) returns (GenericResponse);
+  rpc GetCart(UserRequest) returns (CartList);
+  rpc ClearCart(UserRequest) returns (GenericResponse); // ✅ New method
+
+}
+
+message CartItem {
+  string user_id = 1;
+  string product_id = 2;
+  string size = 3;
+  string color = 4;
+  int32 quantity = 5;
+  string product_name = 6; // ✅
+  float price = 7;         // ✅
+  string image_url = 8;    // ✅ optional
+
+}
+
+message CartRequest {
+  string user_id = 1;
+  string product_id = 2;
+}
+
+message CartUpdateRequest {
+  string user_id = 1;
+  string product_id = 2;
+  int32 quantity = 3;
+}
+
+message UserRequest {
+  string user_id = 1;
+}
+
+message CartList {
+  repeated CartItem items = 1;
+}
+
+message GenericResponse {
+  string message = 1;
+}

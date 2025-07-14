@@ -1,0 +1,133 @@
+  - path: /payment
+    type: directory
+    contents:
+    - path: /payment/page.tsx
+      type: file
+  - path: /order-confirmation
+    type: directory
+    contents:
+    - path: /order-confirmation/page.tsx
+      type: file
+  - path: /page.tsx
+    type: file
+  - path: /checkout
+    type: directory
+    contents:
+    - path: /checkout/page.tsx
+      type: file
+  - path: /cart
+    type: directory
+    contents:
+    - path: /cart/page.tsx
+      type: file
+  - path: /orders
+    type: directory
+    contents:
+    - path: /orders/page.tsx
+      type: file
+  - path: /wishlist
+    type: directory
+    contents:
+    - path: /wishlist/page.tsx
+      type: file
+  - path: /profile
+    type: directory
+    contents:
+    - path: /profile/page.tsx
+      type: file
+  - path: /auth
+    type: directory
+    contents:
+    - path: /auth/register
+      type: directory
+      contents:
+      - path: /auth/register/page.tsx
+        type: file
+    - path: /auth/login
+      type: directory
+      contents:
+      - path: /auth/login/page.tsx
+        type: file
+    - path: /auth/forgot
+      type: directory
+      contents:
+      - path: /auth/forgot/page.tsx
+        type: file
+    - path: /auth/reset
+      type: directory
+      contents:
+      - path: /auth/reset/[token]
+        type: directory
+        contents:
+        - path: /auth/reset/[token]/page.tsx
+          type: file
+  - path: /refunds
+    type: directory
+    contents:
+    - path: /refunds/page.tsx
+      type: file
+  - path: /categories
+    type: directory
+    contents:
+    - path: /categories/[gender]
+      type: directory
+      contents:
+      - path: /categories/[gender]/page.tsx
+        type: file
+  - path: /settings
+    type: directory
+    contents:
+    - path: /settings/page.tsx
+      type: file
+  - path: /globals.css
+    type: file
+  - path: /admin
+    type: directory
+    contents:
+    - path: /admin/payments
+      type: directory
+      contents:
+      - path: /admin/payments/loading.tsx
+        type: file
+      - path: /admin/payments/page.tsx
+        type: file
+    - path: /admin/page.tsx
+      type: file
+    - path: /admin/orders
+      type: directory
+      contents:
+      - path: /admin/orders/loading.tsx
+        type: file
+      - path: /admin/orders/page.tsx
+        type: file
+    - path: /admin/profile
+      type: directory
+      contents:
+      - path: /admin/profile/page.tsx
+        type: file
+    - path: /admin/users
+      type: directory
+      contents:
+      - path: /admin/users/loading.tsx
+        type: file
+      - path: /admin/users/page.tsx
+        type: file
+    - path: /admin/products
+      type: directory
+      contents:
+      - path: /admin/products/loading.tsx
+        type: file
+      - path: /admin/products/page.tsx
+        type: file
+  - path: /layout.tsx
+    type: file
+  - path: /dashboard
+    type: directory
+    contents:
+    - path: /dashboard/page.tsx
+      type: file
+  - path: /products
+    type: directory
+    contents:
+    - path: /products/page.tsx
+      type: file

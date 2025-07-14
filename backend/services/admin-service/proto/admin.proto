@@ -1,0 +1,64 @@
+syntax = "proto3";
+package admin;
+option go_package = "admin-service/proto;adminpb";
+
+// Admin management service
+service AdminService {
+  rpc GetDashboardData(Empty) returns (DashboardData);
+  rpc ListAllUsers(Empty) returns (ListUsersResponse);
+  rpc ViewAllOrders(Empty) returns (ListOrdersResponse);
+  rpc GetRecentActivity(Empty) returns (RecentActivityResponse);
+
+}
+
+message Empty {}
+
+message DashboardData {
+  int32 total_users = 1;
+  int32 total_orders = 2;
+  double total_revenue = 3;
+  repeated LowStockItem low_stock_items = 4;
+}
+
+message LowStockItem {
+  string sku_id = 1;
+  string product_id = 2;
+  int32 quantity = 3;
+}
+
+message User {
+  string user_id = 1;
+  string name = 2;
+  string email = 3;
+  string phone = 4;
+  string gender = 5;
+  string dob = 6;
+  string avatar_url = 7;
+}
+
+
+message ListUsersResponse {
+  repeated User users = 1;
+}
+
+message Order {
+  string order_id = 1;
+  string user_id = 2;
+  string status = 3;
+  double total_amount = 4;
+  string created_at = 5;
+}
+
+message ListOrdersResponse {
+  repeated Order orders = 1;
+}
+
+message ActivityItem {
+  string type = 1;         // "user", "order", "inventory"
+  string message = 2;      // "User john.doe@example.com registered"
+  string timestamp = 3;    // ISO string
+}
+
+message RecentActivityResponse {
+  repeated ActivityItem activities = 1;
+}

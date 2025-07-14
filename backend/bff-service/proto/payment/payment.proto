@@ -1,0 +1,47 @@
+syntax = "proto3";
+package payment;
+option go_package = "payment/proto;paymentpb";
+
+service PaymentService {
+  rpc InitiatePayment(PaymentRequest) returns (PaymentResponse);
+  rpc VerifyPayment(VerifyRequest) returns (PaymentStatus);
+  rpc RefundPayment(RefundRequest) returns (RefundStatus);
+}
+
+message PaymentRequest {
+  string order_id = 1;
+  float amount = 2;
+  string currency = 3;
+  string user_id = 4;
+  string gateway = 5;
+  string success_url = 6;
+  string cancel_url = 7;
+}
+
+
+
+message PaymentResponse {
+  string url = 1;
+  string message = 2;
+}
+
+message VerifyRequest {
+  string payment_id = 1;
+}
+
+message PaymentStatus {
+  string status = 1;
+  string txn_ref = 2;
+}
+
+message RefundRequest {
+  string order_id = 1;
+  string payment_id = 2;
+  float amount = 3;
+}
+
+
+message RefundStatus {
+  string status = 1;
+  string message = 2;
+}

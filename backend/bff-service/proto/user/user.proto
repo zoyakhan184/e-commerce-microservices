@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "user-service/proto;userpb";
+
+service UserService {
+  rpc CreateUser(UserProfile) returns (GenericResponse); // ✅ New
+  rpc GetUser(GetUserRequest) returns (UserProfile);
+  rpc UpdateUser(UserProfile) returns (GenericResponse);
+  rpc AddAddress(AddressRequest) returns (AddressResponse);
+  rpc UpdateAddress(AddressRequest) returns (GenericResponse);
+  rpc GetAddresses(UserRequest) returns (AddressList);
+  rpc AddToWishlist(WishlistRequest) returns (GenericResponse);
+  rpc RemoveFromWishlist(WishlistRequest) returns (GenericResponse);
+  rpc GetWishlist(UserRequest) returns (WishlistResponse);
+  rpc ListAllProfiles(Empty) returns (ListProfilesResponse);
+
+}
+
+message GetUserRequest {
+  string user_id = 1;
+}
+
+message UserRequest {
+  string user_id = 1;
+}
+
+message UserProfile {
+  string user_id = 1;
+  string full_name = 2;
+  string email = 3;
+  string phone = 4;
+  string gender = 5;
+  string dob = 6;
+  string avatar_url = 7;
+  string role = 8; // ✅ Add this
+}
+
+
+
+message UpdateUserRequest {
+  string user_id = 1;
+  string full_name = 2;
+  string phone = 3;
+  string gender = 4;
+  string dob = 5;
+  string avatar_url = 6;
+}
+
+message GenericResponse {
+  string message = 1;
+}
+
+message AddressRequest {
+	string id = 1;
+	string user_id = 2;
+	string name = 3;
+	string phone = 4;
+	string address_line = 5;
+	string city = 6;
+	string state = 7;
+	string zip = 8;
+	string country = 9;
+	bool is_default = 10;
+}
+
+message AddressList {
+  repeated AddressRequest addresses = 1;
+}
+
+message WishlistRequest {
+  string user_id = 1;
+  string product_id = 2;
+}
+
+message WishlistResponse {
+  repeated string product_ids = 1;
+}
+
+message ListProfilesResponse {
+  repeated UserProfile profiles = 1;
+}
+
+message AddressResponse {
+	string id = 1;
+	string user_id = 2;
+	string name = 3;
+	string phone = 4;
+	string address_line = 5;
+	string city = 6;
+	string state = 7;
+	string zip = 8;
+	string country = 9;
+	bool is_default = 10;
+}
+message Empty {}

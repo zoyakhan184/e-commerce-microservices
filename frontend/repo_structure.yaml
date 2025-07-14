@@ -1,0 +1,384 @@
+  - path: /public
+    type: directory
+    contents:
+    - path: /public/placeholder-user.jpg
+      type: file
+    - path: /public/placeholder.svg
+      type: file
+    - path: /public/placeholder-logo.svg
+      type: file
+    - path: /public/placeholder.jpg
+      type: file
+    - path: /public/placeholder-logo.png
+      type: file
+  - path: /package-lock.json
+    type: file
+  - path: /app
+    type: directory
+    contents:
+    - path: /app/payment
+      type: directory
+      contents:
+      - path: /app/payment/page.tsx
+        type: file
+    - path: /app/order-confirmation
+      type: directory
+      contents:
+      - path: /app/order-confirmation/page.tsx
+        type: file
+    - path: /app/page.tsx
+      type: file
+    - path: /app/checkout
+      type: directory
+      contents:
+      - path: /app/checkout/page.tsx
+        type: file
+    - path: /app/cart
+      type: directory
+      contents:
+      - path: /app/cart/page.tsx
+        type: file
+    - path: /app/orders
+      type: directory
+      contents:
+      - path: /app/orders/page.tsx
+        type: file
+    - path: /app/wishlist
+      type: directory
+      contents:
+      - path: /app/wishlist/page.tsx
+        type: file
+    - path: /app/profile
+      type: directory
+      contents:
+      - path: /app/profile/page.tsx
+        type: file
+    - path: /app/auth
+      type: directory
+      contents:
+      - path: /app/auth/register
+        type: directory
+        contents:
+        - path: /app/auth/register/page.tsx
+          type: file
+      - path: /app/auth/login
+        type: directory
+        contents:
+        - path: /app/auth/login/page.tsx
+          type: file
+      - path: /app/auth/forgot
+        type: directory
+        contents:
+        - path: /app/auth/forgot/page.tsx
+          type: file
+      - path: /app/auth/reset
+        type: directory
+        contents:
+        - path: /app/auth/reset/[token]
+          type: directory
+          contents:
+          - path: /app/auth/reset/[token]/page.tsx
+            type: file
+    - path: /app/refunds
+      type: directory
+      contents:
+      - path: /app/refunds/page.tsx
+        type: file
+    - path: /app/categories
+      type: directory
+      contents:
+      - path: /app/categories/[gender]
+        type: directory
+        contents:
+        - path: /app/categories/[gender]/page.tsx
+          type: file
+    - path: /app/settings
+      type: directory
+      contents:
+      - path: /app/settings/page.tsx
+        type: file
+    - path: /app/globals.css
+      type: file
+    - path: /app/admin
+      type: directory
+      contents:
+      - path: /app/admin/payments
+        type: directory
+        contents:
+        - path: /app/admin/payments/loading.tsx
+          type: file
+        - path: /app/admin/payments/page.tsx
+          type: file
+      - path: /app/admin/page.tsx
+        type: file
+      - path: /app/admin/orders
+        type: directory
+        contents:
+        - path: /app/admin/orders/loading.tsx
+          type: file
+        - path: /app/admin/orders/page.tsx
+          type: file
+      - path: /app/admin/profile
+        type: directory
+        contents:
+        - path: /app/admin/profile/page.tsx
+          type: file
+      - path: /app/admin/users
+        type: directory
+        contents:
+        - path: /app/admin/users/loading.tsx
+          type: file
+        - path: /app/admin/users/page.tsx
+          type: file
+      - path: /app/admin/products
+        type: directory
+        contents:
+        - path: /app/admin/products/loading.tsx
+          type: file
+        - path: /app/admin/products/page.tsx
+          type: file
+    - path: /app/layout.tsx
+      type: file
+    - path: /app/dashboard
+      type: directory
+      contents:
+      - path: /app/dashboard/page.tsx
+        type: file
+    - path: /app/products
+      type: directory
+      contents:
+      - path: /app/products/page.tsx
+        type: file
+  - path: /next.config.mjs
+    type: file
+  - path: /components.json
+    type: file
+  - path: /next-env.d.ts
+    type: file
+  - path: /tailwind.config.ts
+    type: file
+  - path: /postcss.config.mjs
+    type: file
+  - path: /contexts
+    type: directory
+    contents:
+    - path: /contexts/cart-context.tsx
+      type: file
+    - path: /contexts/auth-context.tsx
+      type: file
+  - path: /hooks
+    type: directory
+    contents:
+    - path: /hooks/use-toast.ts
+      type: file
+    - path: /hooks/use-mobile.tsx
+      type: file
+  - path: /package.json
+    type: file
+  - path: /components
+    type: directory
+    contents:
+    - path: /components/ui
+      type: directory
+      contents:
+      - path: /components/ui/navigation-menu.tsx
+        type: file
+      - path: /components/ui/command.tsx
+        type: file
+      - path: /components/ui/aspect-ratio.tsx
+        type: file
+      - path: /components/ui/table.tsx
+        type: file
+      - path: /components/ui/tooltip.tsx
+        type: file
+      - path: /components/ui/checkbox.tsx
+        type: file
+      - path: /components/ui/form.tsx
+        type: file
+      - path: /components/ui/sidebar.tsx
+        type: file
+      - path: /components/ui/input-otp.tsx
+        type: file
+      - path: /components/ui/input.tsx
+        type: file
+      - path: /components/ui/separator.tsx
+        type: file
+      - path: /components/ui/collapsible.tsx
+        type: file
+      - path: /components/ui/use-toast.ts
+        type: file
+      - path: /components/ui/toast.tsx
+        type: file
+      - path: /components/ui/dialog.tsx
+        type: file
+      - path: /components/ui/toggle-group.tsx
+        type: file
+      - path: /components/ui/menubar.tsx
+        type: file
+      - path: /components/ui/popover.tsx
+        type: file
+      - path: /components/ui/sonner.tsx
+        type: file
+      - path: /components/ui/dropdown-menu.tsx
+        type: file
+      - path: /components/ui/radio-group.tsx
+        type: file
+      - path: /components/ui/badge.tsx
+        type: file
+      - path: /components/ui/carousel.tsx
+        type: file
+      - path: /components/ui/select.tsx
+        type: file
+      - path: /components/ui/switch.tsx
+        type: file
+      - path: /components/ui/context-menu.tsx
+        type: file
+      - path: /components/ui/skeleton.tsx
+        type: file
+      - path: /components/ui/tabs.tsx
+        type: file
+      - path: /components/ui/hover-card.tsx
+        type: file
+      - path: /components/ui/button.tsx
+        type: file
+      - path: /components/ui/progress.tsx
+        type: file
+      - path: /components/ui/calendar.tsx
+        type: file
+      - path: /components/ui/chart.tsx
+        type: file
+      - path: /components/ui/label.tsx
+        type: file
+      - path: /components/ui/scroll-area.tsx
+        type: file
+      - path: /components/ui/avatar.tsx
+        type: file
+      - path: /components/ui/sheet.tsx
+        type: file
+      - path: /components/ui/slider.tsx
+        type: file
+      - path: /components/ui/alert-dialog.tsx
+        type: file
+      - path: /components/ui/use-mobile.tsx
+        type: file
+      - path: /components/ui/breadcrumb.tsx
+        type: file
+      - path: /components/ui/toaster.tsx
+        type: file
+      - path: /components/ui/textarea.tsx
+        type: file
+      - path: /components/ui/toggle.tsx
+        type: file
+      - path: /components/ui/alert.tsx
+        type: file
+      - path: /components/ui/pagination.tsx
+        type: file
+      - path: /components/ui/card.tsx
+        type: file
+      - path: /components/ui/resizable.tsx
+        type: file
+      - path: /components/ui/drawer.tsx
+        type: file
+      - path: /components/ui/accordion.tsx
+        type: file
+    - path: /components/theme-provider.tsx
+      type: file
+    - path: /components/cart
+      type: directory
+      contents:
+      - path: /components/cart/cart-items.tsx
+        type: file
+      - path: /components/cart/cart-summary.tsx
+        type: file
+    - path: /components/auth
+      type: directory
+      contents:
+      - path: /components/auth/auth-guard.tsx
+        type: file
+    - path: /components/home
+      type: directory
+      contents:
+      - path: /components/home/featured-products.tsx
+        type: file
+      - path: /components/home/hero-section.tsx
+        type: file
+      - path: /components/home/newsletter.tsx
+        type: file
+      - path: /components/home/category-grid.tsx
+        type: file
+    - path: /components/admin
+      type: directory
+      contents:
+      - path: /components/admin/admin-header.tsx
+        type: file
+      - path: /components/admin/admin-sidebar.tsx
+        type: file
+      - path: /components/admin/image-upload.tsx
+        type: file
+      - path: /components/admin/admin-layout.tsx
+        type: file
+    - path: /components/layout
+      type: directory
+      contents:
+      - path: /components/layout/footer.tsx
+        type: file
+      - path: /components/layout/header.tsx
+        type: file
+    - path: /components/providers.tsx
+      type: file
+    - path: /components/dashboard
+      type: directory
+      contents:
+      - path: /components/dashboard/user-dashboard.tsx
+        type: file
+      - path: /components/dashboard/recent-orders.tsx
+        type: file
+    - path: /components/products
+      type: directory
+      contents:
+      - path: /components/products/product-filters.tsx
+        type: file
+      - path: /components/products/product-card.tsx
+        type: file
+      - path: /components/products/product-card-skeleton.tsx
+        type: file
+  - path: /styles
+    type: directory
+    contents:
+    - path: /styles/globals.css
+      type: file
+  - path: /lib
+    type: directory
+    contents:
+    - path: /lib/client.ts
+      type: file
+    - path: /lib/utils.ts
+      type: file
+    - path: /lib/api
+      type: directory
+      contents:
+      - path: /lib/api/cart.ts
+        type: file
+      - path: /lib/api/client.ts
+        type: file
+      - path: /lib/api/user.ts
+        type: file
+      - path: /lib/api/auth.ts
+        type: file
+      - path: /lib/api/images.ts
+        type: file
+      - path: /lib/api/reviews.ts
+        type: file
+      - path: /lib/api/products.ts
+        type: file
+      - path: /lib/api/admin.ts
+        type: file
+  - path: /types
+    type: directory
+    contents:
+    - path: /types/index.ts
+      type: file
+  - path: /pnpm-lock.yaml
+    type: file
+  - path: /tsconfig.json
+    type: file
