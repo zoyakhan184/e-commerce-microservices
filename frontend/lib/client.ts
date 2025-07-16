@@ -1,22 +1,19 @@
-// lib/axios.ts or lib/client.ts
-
 import axios from "axios"
+import Cookies from "js-cookie"
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
-  withCredentials: true, // for HttpOnly cookies, if needed
+  baseURL: API_BASE_URL,
+  withCredentials: true,
 })
 
-// Optional: Automatically add Authorization token from localStorage
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token")
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => Promise.reject(error)
-)
+axiosInstance.interceptors.request.use((config) => {
+  const token = Cookies.get("token")
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
 
 export default axiosInstance

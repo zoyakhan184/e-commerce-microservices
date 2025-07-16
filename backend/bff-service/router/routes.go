@@ -13,9 +13,8 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
-	// Enable CORS middleware
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"}, // adjust for your frontend
+		AllowOrigins:     []string{"http://localhost:3000"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -25,81 +24,93 @@ func SetupRouter() *gin.Engine {
 
 	api := r.Group("/api")
 
-	// Auth
+	// Auth (public)
 	api.POST("/auth/login", handlers.Login)
 	api.POST("/auth/register", handlers.Register)
 	api.GET("/auth/validate", handlers.ValidateToken)
 	api.POST("/auth/forgot", handlers.ForgotPassword)
 	api.POST("/auth/reset", handlers.ResetPassword)
 
-	// Users
+	// Users (protected)
 	userGroup := api.Group("/users")
 	userGroup.Use(middleware.AuthMiddleware())
-	userGroup.GET("/profile", handlers.GetUserProfile)
-	userGroup.PUT("/profile", handlers.UpdateUserProfile)
-	userGroup.POST("/address", handlers.AddAddress)
-	userGroup.GET("/addresses", handlers.GetAddresses)
-	userGroup.POST("/wishlist", handlers.AddToWishlist)
-	userGroup.GET("/wishlist", handlers.GetWishlist)
-	userGroup.DELETE("/wishlist/:productId", handlers.RemoveFromWishlist)
+	{
+		userGroup.GET("/profile", handlers.GetUserProfile)
+		userGroup.PUT("/profile", handlers.UpdateUserProfile)
+		userGroup.POST("/address", handlers.AddAddress)
+		userGroup.GET("/addresses", handlers.GetAddresses)
+		userGroup.POST("/wishlist", handlers.AddToWishlist)
+		userGroup.GET("/wishlist", handlers.GetWishlist)
+		userGroup.DELETE("/wishlist/:productId", handlers.RemoveFromWishlist)
+	}
 
-	// Products
+	// Cart (protected)
+	cartGroup := api.Group("/cart")
+	cartGroup.Use(middleware.AuthMiddleware())
+	{
+		cartGroup.POST("", handlers.AddToCart)
+		cartGroup.GET("", handlers.GetCart)
+		cartGroup.PUT("", handlers.UpdateCartItem)
+		cartGroup.DELETE("", handlers.RemoveFromCart)
+		cartGroup.DELETE("/clear", handlers.ClearCart)
+	}
+
+	// Orders (protected)
+	orderGroup := api.Group("/orders")
+	orderGroup.Use(middleware.AuthMiddleware())
+	{
+		orderGroup.POST("", handlers.PlaceOrder)
+		orderGroup.GET("", handlers.GetOrders)
+		orderGroup.GET("/:id", handlers.GetOrderDetails)
+		orderGroup.PUT("/:id/status", handlers.UpdateOrderStatus)
+	}
+
+	// Reviews (protected)
+	reviewGroup := api.Group("/reviews")
+	reviewGroup.Use(middleware.AuthMiddleware())
+	{
+		reviewGroup.POST("", handlers.AddReview)
+		reviewGroup.GET("/:product_id", handlers.GetReviews)
+		reviewGroup.PUT("/:id", handlers.EditReview)
+		reviewGroup.DELETE("/:id", handlers.DeleteReview)
+	}
+
+	// Images (public)
+	api.POST("/images/upload", handlers.UploadImage)
+	api.DELETE("/images/delete", handlers.DeleteImage)
+	api.GET("/images/:id", handlers.GetImage)
+
+	// Products (public)
 	api.GET("/products/:id", handlers.GetProduct)
 	api.GET("/products", handlers.ListProducts)
 	api.POST("/products", handlers.AddProduct)
 	api.PUT("/products/:id", handlers.EditProduct)
 	api.DELETE("/products/:id", handlers.DeleteProduct)
 
-	// Categories
+	// Categories (public)
 	api.GET("/categories", handlers.ListCategories)
 	api.POST("/categories", handlers.AddCategory)
 
-	// Inventory
-	api.GET("/inventory/stock", handlers.GetStock)
-	api.POST("/inventory/stock/update", handlers.UpdateStockOnOrder) // 🔧 fixed missing "/"
-	api.POST("/inventory/stock/restock", handlers.Restock)           // 🔧 fixed missing "/"
-	api.GET("/inventory/low-stock", handlers.ListLowStock)           // 🔧 fixed missing "/"
-
-	// Cart
-	api.Use(middleware.AuthMiddleware()) // ✅ MUST include this!
-
+	// Inventory (protected)
+	invGroup := api.Group("/inventory")
+	invGroup.Use(middleware.AuthMiddleware())
 	{
-		api.POST("/cart", handlers.AddToCart)
-		api.GET("/cart", handlers.GetCart)
-		api.PUT("/cart", handlers.UpdateCartItem)
-		api.DELETE("/cart", handlers.RemoveFromCart)
-		api.DELETE("/cart/clear", handlers.ClearCart)
+		invGroup.GET("/stock", handlers.GetStock)
+		invGroup.POST("/stock/update", handlers.UpdateStockOnOrder)
+		invGroup.POST("/stock/restock", handlers.Restock)
+		invGroup.GET("/low-stock", handlers.ListLowStock)
 	}
 
-	// Orders
-	api.POST("/orders", handlers.PlaceOrder)
-	api.GET("/orders", handlers.GetOrders)
-	api.GET("/orders/:id", handlers.GetOrderDetails)
-	api.PUT("/orders/:id/status", handlers.UpdateOrderStatus)
-
-	// Payments
-	api.POST("/payment/initiate", handlers.InitiatePayment)
-	api.POST("/payment/verify", handlers.VerifyPayment)
-	api.POST("/payment/refund", handlers.RefundPayment)
-
-	// Reviews
-	api.POST("/reviews", handlers.AddReview)
-	api.GET("/reviews/:product_id", handlers.GetReviews)
-	api.PUT("/reviews/:id", handlers.EditReview)
-	api.DELETE("/reviews/:id", handlers.DeleteReview)
-
-	// Images
-	api.POST("/images/upload", handlers.UploadImage)
-	api.DELETE("/images/delete", handlers.DeleteImage)
-	api.GET("/images/:id", handlers.GetImage) // 🔧 fixed route clash (was just "/:id")
-
-	// Admin
-	api.GET("/admin/dashboard", handlers.GetDashboard)
-	api.GET("/admin/users", handlers.ListUsers)
-	api.GET("/admin/orders", handlers.ListAllOrders)
-	api.GET("/admin/activity", handlers.GetRecentActivity)
-
-	api.GET("/admin/user-profiles", handlers.ListAllUserProfiles)
+	// Admin (should be protected with admin-only middleware)
+	adminGroup := api.Group("/admin")
+	adminGroup.Use(middleware.AuthMiddleware()) // ❗ optionally: .Use(middleware.AdminOnly())
+	{
+		adminGroup.GET("/dashboard", handlers.GetDashboard)
+		adminGroup.GET("/users", handlers.ListUsers)
+		adminGroup.GET("/orders", handlers.ListAllOrders)
+		adminGroup.GET("/activity", handlers.GetRecentActivity)
+		adminGroup.GET("/user-profiles", handlers.ListAllUserProfiles)
+	}
 
 	return r
 }

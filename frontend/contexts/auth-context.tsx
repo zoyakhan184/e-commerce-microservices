@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
-  useEffect(() => {
+    useEffect(() => {
     const token = Cookies.get("token")
     if (token) {
       authApi
@@ -31,32 +31,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .then((data) => {
           setUser({ id: data.userId, role: data.role as "user" | "admin", name: "", email: "" })
         })
-        .catch(() => logout())
+        .catch(() => {
+          logout()
+        })
+        .finally(() => setIsLoading(false))
+    } else {
+      setIsLoading(false)
     }
-    setIsLoading(false)
   }, [])
 
+
+
   const login = async (email: string, password: string): Promise<boolean> => {
-    try {
-      const data = await authApi.login(email, password)
-      Cookies.set("token", data.token, { expires: 7 })
-      setUser({ id: data.userId, role: data.role as "user" | "admin", name: "", email })
-      return true
-    } catch {
-      return false
-    }
+  try {
+    
+    const data = await authApi.login(email, password)
+     Cookies.set("token", data.token, {
+      expires: 7,
+      path: "/",
+      sameSite: "Lax",
+      secure: process.env.NODE_ENV === "production",
+    })
+    setUser({ id: data.userId, role: data.role as "user" | "admin", name: "", email })
+    return true
+  } catch {
+    return false
   }
+}
 
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
     try {
       const data = await authApi.register(name, email, password)
-      Cookies.set("token", data.token, { expires: 7 })
+      console.log("[AuthContext] 📝 Registered user:", data)
+
+      Cookies.set("token", data.token, {
+        expires: 7,
+        path: "/",
+        sameSite: "Lax",
+        secure: process.env.NODE_ENV === "production",
+      })
       setUser({ id: data.userId, role: data.role as "user" | "admin", name, email })
       return true
     } catch {
       return false
     }
   }
+
 
   const forgotPassword = async (email: string): Promise<boolean> => {
     try {

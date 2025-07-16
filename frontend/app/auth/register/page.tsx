@@ -1,9 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
 import { useAuth } from "@/contexts/auth-context"
+
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -24,6 +24,8 @@ export default function RegisterPage() {
 
   const { register } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectPath = searchParams.get("redirect") || null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,7 +44,11 @@ export default function RegisterPage() {
       const success = await register(name, email, password)
 
       if (success) {
-        router.push("/dashboard") // Or "/admin" if role-based routing is handled separately
+        if (redirectPath) {
+          router.push(redirectPath)
+        } else {
+          router.push("/dashboard")
+        }
       } else {
         setError("Registration failed. Please check your input and try again.")
       }
@@ -59,7 +65,6 @@ export default function RegisterPage() {
       [e.target.name]: e.target.value,
     }))
   }
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 p-4">
@@ -142,7 +147,10 @@ export default function RegisterPage() {
           </form>
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
-            <Link href="/auth/login" className="text-purple-600 hover:underline">
+            <Link
+              href={`/auth/login${redirectPath ? `?redirect=${encodeURIComponent(redirectPath)}` : ""}`}
+              className="text-purple-600 hover:underline"
+            >
               Sign in
             </Link>
           </div>

@@ -70,7 +70,7 @@ export function UserDashboard() {
     const fetchWishlist = async () => {
       try {
         const wishlist = await userApi.getWishlist()
-        setWishlistCount(wishlist?.length || 0)
+        setWishlistCount(wishlist?.items?.length || 0)
       } catch (error) {
         console.error("Failed to fetch wishlist count", error)
       }

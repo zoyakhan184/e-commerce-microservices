@@ -5,6 +5,7 @@ import (
 	authpb "bff-service/proto/auth"
 	"bff-service/utils"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -71,13 +72,26 @@ func ResetPassword(c *gin.Context) {
 
 // POST /api/auth/validate-token
 func ValidateToken(c *gin.Context) {
+	var token string
+
+	// Try to read from JSON body
 	var req authpb.ValidateTokenRequest
-	if err := c.ShouldBindJSON(&req); err != nil || req.Token == "" {
+	if err := c.ShouldBindJSON(&req); err == nil && req.Token != "" {
+		token = req.Token
+	} else {
+		// Try reading from Authorization header
+		authHeader := c.GetHeader("Authorization")
+		if strings.HasPrefix(authHeader, "Bearer ") {
+			token = strings.TrimPrefix(authHeader, "Bearer ")
+		}
+	}
+
+	if token == "" {
 		utils.RespondWithError(c, http.StatusBadRequest, "Token is required")
 		return
 	}
 
-	resp, err := clients.AuthClient().ValidateToken(c, &req)
+	resp, err := clients.AuthClient().ValidateToken(c, &authpb.ValidateTokenRequest{Token: token})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusUnauthorized, err.Error())
 		return

@@ -2,7 +2,6 @@ import axios from "../client"
 import type { AdminDashboard, User, Product, Order, Payment, Category , ActivityItem } from "@/types"
 
 export const adminApi = {
-  // DASHBOARD
   getDashboard: async (): Promise<AdminDashboard> => {
     const res = await axios.get("/admin/dashboard")
     return res.data
@@ -12,8 +11,7 @@ export const adminApi = {
     const res = await axios.get("/admin/activity")
     return res.data
   },
-  
-  // USERS
+
   getUsers: async (): Promise<User[]> => {
     const res = await axios.get("/admin/user-profiles")
     return res.data
@@ -27,28 +25,18 @@ export const adminApi = {
     await axios.put(`/admin/users/${userId}/status`, { status })
   },
 
-  // PRODUCTS
   getProducts: async (): Promise<Product[]> => {
     const res = await axios.get("/products")
     return res.data.products
   },
 
   getCategories: async (): Promise<Category[]> => {
-    const res = await axios.get<Category[]>("/api/categories")
+    const res = await axios.get("/categories")
     return res.data
   },
 
   createProduct: async (product: Omit<Product, "id">): Promise<Product> => {
-    const res = await axios.post("/products", {
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      brand: product.brand,
-      category_id: product.categoryId,
-      image_urls: product.imageUrls,
-      sizes: product.sizes,
-      colors: product.colors,
-    })
+    const res = await axios.post("/products", { ...product })
     return res.data
   },
 
@@ -61,7 +49,6 @@ export const adminApi = {
     await axios.delete(`/products/${productId}`)
   },
 
-  // ORDERS
   getOrders: async (): Promise<Order[]> => {
     const res = await axios.get("/admin/orders")
     return res.data.orders
@@ -71,7 +58,6 @@ export const adminApi = {
     await axios.put(`/orders/${orderId}/status`, { status })
   },
 
-  // PAYMENTS
   getPayments: async (): Promise<Payment[]> => {
     const res = await axios.get("/payments")
     return res.data.payments
@@ -85,7 +71,6 @@ export const adminApi = {
     await axios.post(`/payment/refund`, { payment_id: paymentId })
   },
 
-  // ADMIN PROFILE
   getAdminProfile: async (): Promise<User> => {
     const res = await axios.get("/users/profile")
     return res.data

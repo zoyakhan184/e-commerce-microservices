@@ -2,7 +2,6 @@ import axios from "../client"
 import type { Product, Category } from "@/types"
 
 export const productsApi = {
-  // ✅ Fetch all products with optional filters
   getProducts: async (params?: {
     categoryId?: string
     brand?: string
@@ -18,19 +17,15 @@ export const productsApi = {
       })
     }
 
-    const res = await axios.get<Product[]>(
-      `/products?${searchParams.toString()}`
-    )
+    const res = await axios.get<Product[]>(`/products?${searchParams.toString()}`)
     return res.data
   },
 
-  // ✅ Fetch single product by ID
   getProduct: async (id: string): Promise<Product> => {
     const res = await axios.get<Product>(`/products/${id}`)
     return res.data
   },
 
-  // ✅ Fetch categories from backend
   getCategories: async (): Promise<Category[]> => {
     const res = await axios.get<Category[]>("/categories")
     return res.data

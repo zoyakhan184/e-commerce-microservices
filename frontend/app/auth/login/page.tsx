@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -24,6 +24,8 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const { login } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectPath = searchParams.get("redirect") || null
 
   function decodeJWT<T = any>(token: string): T | null {
     try {
@@ -44,12 +46,16 @@ export default function LoginPage() {
     try {
       const success = await login(email, password)
       if (success) {
-        const token = Cookies.get("token")
-        const decodedToken = decodeJWT(token || "")
-        if (decodedToken?.role === "admin") {
-          router.push("/admin")
+        if (redirectPath) {
+          router.push(redirectPath)
         } else {
-          router.push("/dashboard")
+          const token = Cookies.get("token")
+          const decodedToken = decodeJWT(token || "")
+          if (decodedToken?.role === "admin") {
+            router.push("/admin")
+          } else {
+            router.push("/dashboard")
+          }
         }
       } else {
         setError("Invalid email or password")
@@ -71,7 +77,11 @@ export default function LoginPage() {
     try {
       const success = await login(credentials.email, credentials.password)
       if (success) {
-        router.push(type === "admin" ? "/admin" : "/dashboard")
+        if (redirectPath) {
+          router.push(redirectPath)
+        } else {
+          router.push(type === "admin" ? "/admin" : "/dashboard")
+        }
       }
     } catch {
       setError("Login failed. Please try again.")
@@ -156,7 +166,11 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              disabled={isLoading}
+            >
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
           </form>

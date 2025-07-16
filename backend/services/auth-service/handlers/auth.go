@@ -42,6 +42,7 @@ func (s *AuthService) Register(ctx context.Context, req *authpb.RegisterRequest)
 	})
 
 	token, _ := utils.GenerateJWT(user.ID, user.Role)
+	fmt.Println("generated token:", token)
 	return &authpb.AuthResponse{Token: token, UserId: user.ID, Role: user.Role}, nil
 }
 
@@ -108,6 +109,7 @@ func (s *AuthService) ResetPassword(ctx context.Context, req *authpb.ResetPasswo
 }
 
 func (s *AuthService) ValidateToken(ctx context.Context, req *authpb.ValidateTokenRequest) (*authpb.ValidateTokenResponse, error) {
+	fmt.Println("Validating token:", req.Token)
 	claims, err := utils.ParseJWT(req.Token)
 	if err != nil {
 		return nil, fmt.Errorf("invalid token: %v", err)

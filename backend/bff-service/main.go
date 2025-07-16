@@ -3,6 +3,7 @@ package main
 import (
 	"bff-service/clients"
 	"bff-service/router"
+	"fmt"
 	"log"
 	"os"
 
@@ -10,15 +11,17 @@ import (
 )
 
 func main() {
-	// Load environment variables
+	// ✅ Load .env from current directory (same as main.go)
 	if err := godotenv.Load(".env"); err != nil {
-		log.Println("⚠️  .env file not found, using system environment variables")
+
+		log.Println("⚠️  .env file not found in root, using system environment variables")
 	} else {
-		log.Println("✅ .env file loaded successfully")
+		log.Println("✅ .env file loaded successfully from root")
 	}
 
-	// Log critical environment values
+	// ✅ Log JWT_SECRET presence
 	jwtSecret := os.Getenv("JWT_SECRET")
+	fmt.Println("JWT_SECRET:", jwtSecret)
 	if jwtSecret == "" {
 		log.Println("❌ JWT_SECRET not set. Token validation will fail.")
 	} else {
@@ -46,7 +49,7 @@ func main() {
 	clients.CartClient()
 	log.Println("✅ CartClient initialized")
 
-	// Setup and run Gin server
+	// Start Gin server
 	r := router.SetupRouter()
 	port := os.Getenv("BFF_PORT")
 	if port == "" {

@@ -1,22 +1,30 @@
-// import { apiClient } from "./client"
+import axios from "../client"
 
-// export const reviewsApi = {
-//   addReview: (userId: string, productId: string, rating: number, comment: string, imageData?: string) =>
-//     apiClient.post<{ message: string }>("/api/reviews/add", {
-//       userId,
-//       productId,
-//       rating,
-//       comment,
-//       imageData,
-//     }),
+export const reviewsApi = {
+  addReview: (
+    userId: string,
+    productId: string,
+    rating: number,
+    comment: string,
+    imageData?: string
+  ) =>
+    axios.post<{ message: string }>("/reviews", {
+      userId,
+      productId,
+      rating,
+      comment,
+      imageData,
+    }),
 
-//   getReviews: (productId: string) => apiClient.get<any[]>(`/api/reviews/${productId}`),
+  getReviews: (productId: string) =>
+    axios.get<any[]>(`/reviews/${productId}`),
 
-//   editReview: (reviewId: string, rating: number, comment: string) =>
-//     apiClient.put<{ message: string }>(`/api/reviews/${reviewId}`, {
-//       rating,
-//       comment,
-//     }),
+  editReview: (reviewId: string, rating: number, comment: string) =>
+    axios.put<{ message: string }>(`/reviews/${reviewId}`, {
+      rating,
+      comment,
+    }),
 
-//   deleteReview: (reviewId: string) => apiClient.delete<{ message: string }>(`/api/reviews/${reviewId}`),
-// }
+  deleteReview: (reviewId: string) =>
+    axios.delete<{ message: string }>(`/reviews/${reviewId}`),
+}

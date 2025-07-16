@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -14,7 +15,15 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
+// ✅ Dynamically fetch JWT secret at runtime to avoid early-loading issues
+func getJWTSecret() []byte {
+	secret := os.Getenv("JWT_SECRET")
+	fmt.Println("JWT_SECRET:", secret)
+	if secret == "" {
+		panic("JWT_SECRET is not set in environment")
+	}
+	return []byte(secret)
+}
 
 func GenerateJWT(userID, role string) (string, error) {
 	claims := Claims{
@@ -26,18 +35,23 @@ func GenerateJWT(userID, role string) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtSecret)
+	return token.SignedString(getJWTSecret())
 }
 
 func ParseJWT(tokenStr string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return jwtSecret, nil
+		// ✅ Ensure correct signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+		return getJWTSecret(), nil
 	})
 
 	if err != nil {
 		return nil, err
 	}
 
+	// ✅ Validate claims type and token validity
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
 		return claims, nil
 	}
@@ -45,8 +59,6 @@ func ParseJWT(tokenStr string) (*Claims, error) {
 	return nil, errors.New("invalid token claims")
 }
 
-// ValidateToken parses and validates a JWT token string.
-// Returns claims if valid, or an error.
 func ValidateToken(tokenStr string) (*Claims, error) {
 	return ParseJWT(tokenStr)
 }

@@ -8,8 +8,8 @@ export type CartItem = {
 
 export const orderApi = {
   async placeOrder(items: CartItem[]): Promise<{ orderId: string }> {
-    const res = await axios.post("/orders", { items }) // BFF expects: { items: [{ product_id, quantity }] }
-    return res.data // { orderId: string }
+    const res = await axios.post("/orders", { items })
+    return res.data
   },
 
   async clearCart(): Promise<void> {

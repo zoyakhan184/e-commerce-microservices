@@ -12,12 +12,10 @@ export const imageApi = {
     formData.append("entity_type", entityType)
 
     const res = await axios.post("/images/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+      headers: { "Content-Type": "multipart/form-data" },
     })
 
-    return res.data // { image_id: string }
+    return res.data
   },
 
   getImage: async (imageId: string): Promise<{ url: string; fileType: string }> => {
@@ -32,3 +30,4 @@ export const imageApi = {
     return res.data
   },
 }
+

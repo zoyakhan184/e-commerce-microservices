@@ -3,9 +3,9 @@ module bff-service
 go 1.24.1
 
 require (
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-gonic/gin v1.10.1
+	github.com/golang-jwt/jwt/v5 v5.2.3
 	github.com/joho/godotenv v1.5.1
 	google.golang.org/grpc v1.73.0
 	google.golang.org/protobuf v1.36.6

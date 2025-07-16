@@ -43,7 +43,7 @@ export default function OrdersPage() {
 
           {loading ? (
             <p className="text-center py-10">Loading orders...</p>
-          ) : orders.length === 0 ? (
+          ) : orders?.length === 0 ? (
             <Card>
               <CardContent className="text-center py-16">
                 <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
@@ -56,7 +56,7 @@ export default function OrdersPage() {
             </Card>
           ) : (
             <div className="space-y-6">
-              {orders.map((order) => (
+              {orders?.map((order) => (
                 <Card key={order.id}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
