@@ -19,10 +19,16 @@ func main() {
 	rabbitmq.InitRabbitMQ()
 	rabbitmq.StartConsumer(repo)
 
-	lis, _ := net.Listen("tcp", ":50057")
+	lis, err := net.Listen("tcp", ":50057")
+	if err != nil {
+		log.Fatalf("❌ Failed to listen on port 50057: %v", err)
+	}
+
 	grpcServer := grpc.NewServer()
 	orderpb.RegisterOrderServiceServer(grpcServer, &handlers.OrderService{Repo: repo})
 
 	log.Println("📦 Order Service running on port 50057")
-	grpcServer.Serve(lis)
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("❌ Failed to serve: %v", err)
+	}
 }

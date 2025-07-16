@@ -4,6 +4,7 @@ import (
 	"bff-service/clients"
 	productpb "bff-service/proto/product"
 	"bff-service/utils"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +14,7 @@ import (
 func ListProducts(c *gin.Context) {
 	filter := &productpb.ProductFilter{
 		CategoryId: c.Query("category_id"),
-		Brand:      c.Query("brand"),
+		Brand:       c.Query("brand"),
 	}
 
 	resp, err := clients.ProductClient().ListProducts(c, filter)
@@ -42,7 +43,7 @@ func AddProduct(c *gin.Context) {
 		utils.RespondWithError(c, http.StatusBadRequest, "Invalid input")
 		return
 	}
-
+	fmt.Println("Adding product with request:", &req)
 	resp, err := clients.ProductClient().AddProduct(c, &req)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to add product")

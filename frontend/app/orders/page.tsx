@@ -15,6 +15,7 @@ import Link from "next/link"
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
+  const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -30,6 +31,25 @@ export default function OrdersPage() {
 
     fetchOrders()
   }, [])
+
+  const handleCancelOrder = async (orderId: string) => {
+    if (!confirm("Are you sure you want to cancel this order?")) return
+
+    setCancellingOrderId(orderId)
+    try {
+      await orderApi.cancelOrder(orderId)
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId ? { ...order, status: "cancelled" } : order
+        )
+      )
+    } catch (err) {
+      console.error("❌ Cancel order failed:", err)
+      alert("Failed to cancel order.")
+    } finally {
+      setCancellingOrderId(null)
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -66,7 +86,13 @@ export default function OrdersPage() {
                       </CardTitle>
                       <Badge
                         variant={order.status === "delivered" ? "default" : "secondary"}
-                        className={order.status === "delivered" ? "bg-green-100 text-green-700" : ""}
+                        className={
+                          order.status === "delivered"
+                            ? "bg-green-100 text-green-700"
+                            : order.status === "cancelled"
+                            ? "bg-red-100 text-red-700"
+                            : ""
+                        }
                       >
                         {order.status}
                       </Badge>
@@ -119,13 +145,24 @@ export default function OrdersPage() {
                       ))}
                     </div>
 
-                    <div className="flex justify-end mt-4">
+                    <div className="flex justify-end mt-4 gap-2">
                       <Link href={`/orders/${order.id}`}>
                         <Button variant="outline" size="sm">
                           <Eye className="h-4 w-4 mr-2" />
                           View Details
                         </Button>
                       </Link>
+
+                      {["pending", "processing"].includes(order.status) && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleCancelOrder(order.id)}
+                          disabled={cancellingOrderId === order.id}
+                        >
+                          {cancellingOrderId === order.id ? "Cancelling..." : "Cancel Order"}
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

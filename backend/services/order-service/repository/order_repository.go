@@ -48,3 +48,9 @@ func (r *OrderRepo) GetOrderWithItems(orderID string) (models.Order, error) {
 	err := r.DB.Preload("OrderItems").Where("id = ?", orderID).First(&order).Error
 	return order, err
 }
+
+func (r *OrderRepo) GetAllOrders() ([]models.Order, error) {
+	var orders []models.Order
+	err := r.DB.Preload("OrderItems").Order("created_at desc").Find(&orders).Error
+	return orders, err
+}

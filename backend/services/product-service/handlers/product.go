@@ -24,13 +24,14 @@ func (s *ProductService) AddProduct(ctx context.Context, req *productpb.ProductR
 		ID:          uuid.NewString(),
 		Name:        req.Name,
 		Description: req.Description,
-		CategoryID:  req.CategoryId,
+		CategoryId:  req.CategoryId,
 		Price:       req.Price,
 		Brand:       req.Brand,
 		CreatedAt:   time.Now(),
 	}
-
+	fmt.Println("Adding image URL before", req.ImageUrls)
 	for _, url := range req.ImageUrls {
+		fmt.Println("Adding image URL:", url)
 		product.Images = append(product.Images, models.ProductImage{
 			ID:        uuid.NewString(),
 			ImageURL:  url,
@@ -50,7 +51,7 @@ func (s *ProductService) EditProduct(ctx context.Context, req *productpb.Product
 		ID:          req.Id,
 		Name:        req.Name,
 		Description: req.Description,
-		CategoryID:  req.CategoryId,
+		CategoryId: req.CategoryId,
 		Price:       req.Price,
 		Brand:       req.Brand,
 	}
@@ -75,20 +76,20 @@ func (s *ProductService) GetProduct(ctx context.Context, req *productpb.ProductI
 		return nil, err
 	}
 
-	imageUrls := []string{}
+	image_urls := []string{}
 	for _, img := range product.Images {
 		dataURI := fmt.Sprintf("data:image/jpeg;base64,%s", img.ImageURL)
-		imageUrls = append(imageUrls, dataURI)
+		image_urls = append(image_urls, dataURI)
 	}
 
 	return &productpb.ProductResponse{
 		Id:          product.ID,
 		Name:        product.Name,
 		Description: product.Description,
-		CategoryId:  product.CategoryID,
+		CategoryId:  product.CategoryId,
 		Price:       product.Price,
 		Brand:       product.Brand,
-		ImageUrls:   imageUrls,
+		ImageUrls:   image_urls,
 	}, nil
 }
 
@@ -118,16 +119,15 @@ func (s *ProductService) ListProducts(ctx context.Context, req *productpb.Produc
 			Id:          p.ID,
 			Name:        p.Name,
 			Description: p.Description,
-			CategoryId:  p.CategoryID,
+			CategoryId:  p.CategoryId,
 			Price:       p.Price,
 			Brand:       p.Brand,
-			ImageUrls:   urls,
+			ImageUrls:  urls,
 		})
 	}
 
 	return &productpb.ProductList{Products: list}, nil
 }
-
 
 func (s *ProductService) AddCategory(ctx context.Context, req *productpb.CategoryRequest) (*productpb.GenericResponse, error) {
 	var parentID *string

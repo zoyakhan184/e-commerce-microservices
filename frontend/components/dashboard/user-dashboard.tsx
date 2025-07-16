@@ -24,7 +24,7 @@ export function UserDashboard() {
   const [wishlistCount, setWishlistCount] = useState(0)
 
   const [filters, setFilters] = useState({
-    categoryId: "",
+    category_id: "",
     brand: "",
     priceRange: "",
     sortBy: "",
@@ -50,12 +50,12 @@ export function UserDashboard() {
     }
   }
 
-  const filteredProducts = products.filter((product : any) => {
+  const filteredProducts = products?.filter((product : any) => {
     const matchesSearch =
       product?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product?.description?.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory =
-      selectedCategory === "all" || product.categoryId?.toLowerCase().includes(selectedCategory)
+      selectedCategory === "all" || product.category_id?.toLowerCase().includes(selectedCategory)
     return matchesSearch && matchesCategory
   })
 
@@ -204,7 +204,7 @@ export function UserDashboard() {
           <h2 className="text-2xl font-bold">
             {selectedCategory === "all" ? "All Products" : categories.find((c) => c.id === selectedCategory)?.name}
           </h2>
-          <Badge variant="outline">{filteredProducts.length} items found</Badge>
+          <Badge variant="outline">{filteredProducts?.length} items found</Badge>
         </div>
 
         {isLoading ? (
@@ -215,7 +215,7 @@ export function UserDashboard() {
           <Card>
             <CardContent className="p-12 text-center text-red-500">Error loading products</CardContent>
           </Card>
-        ) : filteredProducts.length === 0 ? (
+        ) : filteredProducts?.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center text-muted-foreground">
               No products found matching your search.
@@ -223,7 +223,7 @@ export function UserDashboard() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
+            {filteredProducts?.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}

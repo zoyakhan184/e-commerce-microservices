@@ -24,6 +24,7 @@ const (
 	OrderService_GetOrderDetails_FullMethodName   = "/order.OrderService/GetOrderDetails"
 	OrderService_UpdateOrderStatus_FullMethodName = "/order.OrderService/UpdateOrderStatus"
 	OrderService_GenerateInvoice_FullMethodName   = "/order.OrderService/GenerateInvoice"
+	OrderService_ListAllOrders_FullMethodName     = "/order.OrderService/ListAllOrders"
 )
 
 // OrderServiceClient is the client API for OrderService service.
@@ -35,6 +36,7 @@ type OrderServiceClient interface {
 	GetOrderDetails(ctx context.Context, in *GetOrderDetailsRequest, opts ...grpc.CallOption) (*GetOrderDetailsResponse, error)
 	UpdateOrderStatus(ctx context.Context, in *UpdateOrderStatusRequest, opts ...grpc.CallOption) (*UpdateOrderStatusResponse, error)
 	GenerateInvoice(ctx context.Context, in *GenerateInvoiceRequest, opts ...grpc.CallOption) (*GenerateInvoiceResponse, error)
+	ListAllOrders(ctx context.Context, in *ListAllOrdersRequest, opts ...grpc.CallOption) (*ListAllOrdersResponse, error)
 }
 
 type orderServiceClient struct {
@@ -95,6 +97,16 @@ func (c *orderServiceClient) GenerateInvoice(ctx context.Context, in *GenerateIn
 	return out, nil
 }
 
+func (c *orderServiceClient) ListAllOrders(ctx context.Context, in *ListAllOrdersRequest, opts ...grpc.CallOption) (*ListAllOrdersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListAllOrdersResponse)
+	err := c.cc.Invoke(ctx, OrderService_ListAllOrders_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OrderServiceServer is the server API for OrderService service.
 // All implementations must embed UnimplementedOrderServiceServer
 // for forward compatibility.
@@ -104,6 +116,7 @@ type OrderServiceServer interface {
 	GetOrderDetails(context.Context, *GetOrderDetailsRequest) (*GetOrderDetailsResponse, error)
 	UpdateOrderStatus(context.Context, *UpdateOrderStatusRequest) (*UpdateOrderStatusResponse, error)
 	GenerateInvoice(context.Context, *GenerateInvoiceRequest) (*GenerateInvoiceResponse, error)
+	ListAllOrders(context.Context, *ListAllOrdersRequest) (*ListAllOrdersResponse, error)
 	mustEmbedUnimplementedOrderServiceServer()
 }
 
@@ -128,6 +141,9 @@ func (UnimplementedOrderServiceServer) UpdateOrderStatus(context.Context, *Updat
 }
 func (UnimplementedOrderServiceServer) GenerateInvoice(context.Context, *GenerateInvoiceRequest) (*GenerateInvoiceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GenerateInvoice not implemented")
+}
+func (UnimplementedOrderServiceServer) ListAllOrders(context.Context, *ListAllOrdersRequest) (*ListAllOrdersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAllOrders not implemented")
 }
 func (UnimplementedOrderServiceServer) mustEmbedUnimplementedOrderServiceServer() {}
 func (UnimplementedOrderServiceServer) testEmbeddedByValue()                      {}
@@ -240,6 +256,24 @@ func _OrderService_GenerateInvoice_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OrderService_ListAllOrders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAllOrdersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).ListAllOrders(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OrderService_ListAllOrders_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).ListAllOrders(ctx, req.(*ListAllOrdersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OrderService_ServiceDesc is the grpc.ServiceDesc for OrderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -266,6 +300,10 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GenerateInvoice",
 			Handler:    _OrderService_GenerateInvoice_Handler,
+		},
+		{
+			MethodName: "ListAllOrders",
+			Handler:    _OrderService_ListAllOrders_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

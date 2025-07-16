@@ -3,7 +3,7 @@ import type { Product, Category } from "@/types"
 
 export const productsApi = {
   getProducts: async (params?: {
-    categoryId?: string
+    category_id?: string
     brand?: string
     priceRange?: string
     sortBy?: string

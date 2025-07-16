@@ -12,6 +12,7 @@ interface CartContextType {
   totalPrice: number // optional (can be removed or mapped to total)
   subtotal: number
   shipping: number
+  image_url?: string
   total: number
   addToCart: (item: Omit<CartItem, "quantity"> & { quantity?: number }) => Promise<void>
   removeFromCart: (item: { product_id: string; size: string; color: string }) => Promise<void>

@@ -54,13 +54,13 @@ export default function AdminProductsPage() {
   const { toast } = useToast()
 
   // Form state for add/edit product
-  const [productForm, setProductForm] = useState({
+  const [productForm, setProductForm] = useState<any>({
     name: "",
     description: "",
     price: "",
     brand: "",
-    categoryId: "",
-    imageUrls: [""],
+    category_id: "",
+    image_urls: [""],
     sizes: [""],
     colors: [""],
   })
@@ -91,7 +91,7 @@ console.log("Categories:", categories)
         product?.brand?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
         product?.description?.toLowerCase().includes(searchQuery?.toLowerCase())
 
-      const matchesCategory = selectedCategory === "all" || product.categoryId === selectedCategory
+      const matchesCategory = selectedCategory === "all" || product.category_id === selectedCategory
 
       return matchesSearch && matchesCategory
     }) || []
@@ -103,10 +103,10 @@ console.log("Categories:", categories)
         description: productForm.description,
         price: Number.parseFloat(productForm.price),
         brand: productForm.brand,
-        categoryId: productForm.categoryId,
-        imageUrls: productForm.imageUrls.filter((url) => url.trim() !== ""),
-        sizes: productForm.sizes.filter((size) => size.trim() !== ""),
-        colors: productForm.colors.filter((color) => color.trim() !== ""),
+        category_id: productForm.category_id,
+        image_urls: productForm.image_urls.filter((url:any) => url.trim() !== ""),
+        sizes: productForm.sizes.filter((size:any) => size.trim() !== ""),
+        colors: productForm.colors.filter((color:any) => color.trim() !== ""),
       })
 
       toast({
@@ -133,10 +133,10 @@ console.log("Categories:", categories)
         description: productForm.description,
         price: Number.parseFloat(productForm.price),
         brand: productForm.brand,
-        categoryId: productForm.categoryId,
-        imageUrls: productForm.imageUrls.filter((url) => url.trim() !== ""),
-        sizes: productForm.sizes.filter((size) => size.trim() !== ""),
-        colors: productForm.colors.filter((color) => color.trim() !== ""),
+        category_id: productForm.category_id,
+        image_urls: productForm.image_urls.filter((url:any) => url.trim() !== ""),
+        sizes: productForm.sizes.filter((size:any) => size.trim() !== ""),
+        colors: productForm.colors.filter((color:any) => color.trim() !== ""),
       })
 
       toast({
@@ -183,8 +183,8 @@ console.log("Categories:", categories)
       description: product.description,
       price: product.price.toString(),
       brand: product.brand,
-      categoryId: product.categoryId,
-      imageUrls: product.imageUrls.length > 0 ? product.imageUrls : [""],
+      category_id: product.category_id,
+      image_urls: product.image_urls.length > 0 ? product.image_urls : [""],
       sizes: product.sizes?.length > 0 ? product.sizes : [""],
       colors: product.colors?.length > 0 ? product.colors : [""],
     })
@@ -197,31 +197,31 @@ console.log("Categories:", categories)
       description: "",
       price: "",
       brand: "",
-      categoryId: "",
-      imageUrls: [""],
+      category_id: "",
+      image_urls: [""],
       sizes: [""],
       colors: [""],
     })
   }
 
-  const addArrayField = (field: "imageUrls" | "sizes" | "colors") => {
-    setProductForm((prev) => ({
+  const addArrayField = (field: "image_urls" | "sizes" | "colors" | "image_urls")  => {
+    setProductForm((prev:any) => ({
       ...prev,
       [field]: [...prev[field], ""],
     }))
   }
 
-  const updateArrayField = (field: "imageUrls" | "sizes" | "colors", index: number, value: string) => {
-    setProductForm((prev) => ({
+  const updateArrayField = (field: "image_urls" | "sizes" | "colors", index: number, value: string) => {
+    setProductForm((prev:any) => ({
       ...prev,
-      [field]: prev[field].map((item, i) => (i === index ? value : item)),
+      [field]: prev[field].map((item:any, i:number) => (i === index ? value : item)),
     }))
   }
 
-  const removeArrayField = (field: "imageUrls" | "sizes" | "colors", index: number) => {
-    setProductForm((prev) => ({
+  const removeArrayField = (field: "image_urls" | "sizes" | "colors", index: number) => {
+    setProductForm((prev:any) => ({
       ...prev,
-      [field]: prev[field].filter((_, i) => i !== index),
+      [field]: prev[field].filter((_:any, i:any) => i !== index),
     }))
   }
 
@@ -254,9 +254,9 @@ console.log("Categories:", categories)
 //   try {
 //     const res = await imageApi.uploadImage(file, "temp", "product") // replace "temp" with real entity ID if needed
 
-//     setProductForm((prev) => ({
+//     setProductForm((prev:any) => ({
 //       ...prev,
-//       imageUrls: [...prev.imageUrls, res.image_id],
+//       image_urls: [...prev.image_urls, res.image_id],
 //     }))
 
 //     toast({
@@ -274,7 +274,7 @@ console.log("Categories:", categories)
 // }
 
 const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0]
+  const file = e.target?.files?.[0]
   if (!file) return
 
   // Optional validation
@@ -291,9 +291,9 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const reader = new FileReader()
   reader.onloadend = () => {
     const base64String = (reader.result as string).split(",")[1] // Remove data:mime;base64,
-    setProductForm((prev) => ({
+    setProductForm((prev:any) => ({
       ...prev,
-      imageUrls: [...prev.imageUrls, base64String],
+      image_urls: [...prev?.image_urls, base64String],
     }))
   }
 
@@ -353,7 +353,7 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                     id="name"
                     required
                     value={productForm.name}
-                    onChange={(e) => setProductForm((prev) => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) => setProductForm((prev:any) => ({ ...prev, name: e.target.value }))}
                     placeholder="Enter product name"
                   />
                 </div>
@@ -362,7 +362,7 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                   <Input
                     id="brand"
                     value={productForm.brand}
-                    onChange={(e) => setProductForm((prev) => ({ ...prev, brand: e.target.value }))}
+                    onChange={(e) => setProductForm((prev:any) => ({ ...prev, brand: e.target.value }))}
                     placeholder="Enter brand name"
                   />
                 </div>
@@ -377,15 +377,15 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                     type="number"
                     step="0.01"
                     value={productForm.price}
-                    onChange={(e) => setProductForm((prev) => ({ ...prev, price: e.target.value }))}
+                    onChange={(e) => setProductForm((prev:any) => ({ ...prev, price: e.target.value }))}
                     placeholder="0.00"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="category">Category *</Label>
                   <Select
-                    value={productForm.categoryId}
-                    onValueChange={(value) => setProductForm((prev) => ({ ...prev, categoryId: value }))}
+                    value={productForm.category_id}
+                    onValueChange={(value) => setProductForm((prev:any) => ({ ...prev, category_id: value }))}
                     required
                   >
                     <SelectTrigger>
@@ -415,7 +415,7 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                 <Textarea
                   id="description"
                   value={productForm.description}
-                  onChange={(e) => setProductForm((prev) => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) => setProductForm((prev:any) => ({ ...prev, description: e.target.value }))}
                   placeholder="Enter product description"
                   rows={3}
                 />
@@ -425,17 +425,21 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
               <div className="space-y-2">
                 <Label>Product Image</Label>
                 <Input type="file" accept="image/jpeg" onChange={handleFileUpload} />
-                {productForm.imageUrls.length > 0 && (
+                {productForm?.image_urls?.length > 0 && productForm?.image_urls?.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {productForm.imageUrls
-                      .filter((url) => url.trim() !== "")
-                      .map((id, index) => (
+                    {productForm?.image_urls
+                      .filter((url:any) => url.trim() !== "")
+                      .map((id:any, index:any) => (
                         <div
                           key={index}
                           className="relative h-16 w-16 border rounded overflow-hidden bg-muted"
                         >
                           <Image
-                            src={`/images/${id}`}
+                            src={
+                            id?.startsWith("data:image")
+                              ? id.replace(/^data:image\/jpeg;base64,?data:image\/jpeg;base64,?/, "data:image/jpeg;base64,")
+                              : `/images/${id}` // fallback if not base64
+            }
                             alt={`Uploaded image ${index + 1}`}
                             fill
                             className="object-cover rounded-md"
@@ -449,7 +453,7 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
               {/* Sizes */}
               <div className="space-y-2">
                 <Label>Available Sizes</Label>
-                {productForm.sizes.map((size, index) => (
+                {productForm.sizes.map((size:any, index:any) => (
                   <div key={index} className="flex gap-2">
                     <Input
                       value={size}
@@ -477,7 +481,7 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
               {/* Colors */}
               <div className="space-y-2">
                 <Label>Available Colors</Label>
-                {productForm.colors.map((color, index) => (
+                {productForm.colors.map((color:any, index:any) => (
                   <div key={index} className="flex gap-2">
                     <Input
                       value={color}
@@ -617,7 +621,7 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredProducts.map((product:any) => (
+                    filteredProducts.length > 0 && filteredProducts?.map((product:any) => (
                       <TableRow key={product.id}>
                         <TableCell>
                           <div className="flex items-center space-x-3">
@@ -642,10 +646,10 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {categories?.find((cat) => cat.id === product.categoryId)?.name || "Unknown"}
+                          {categories?.find((cat) => cat.id === product.category_id)?.name || "Unknown"}
                         </TableCell>
                         <TableCell>{product.brand}</TableCell>
-                        <TableCell className="font-semibold">${product.price.toFixed(2)}</TableCell>
+                        <TableCell className="font-semibold">${product.price && product?.price?.toFixed(2)}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                             In Stock
@@ -706,7 +710,7 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                   <Input
                     id="edit-name"
                     value={productForm.name}
-                    onChange={(e) => setProductForm((prev) => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) => setProductForm((prev:any) => ({ ...prev, name: e.target.value }))}
                     placeholder="Enter product name"
                   />
                 </div>
@@ -715,7 +719,7 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                   <Input
                     id="edit-brand"
                     value={productForm.brand}
-                    onChange={(e) => setProductForm((prev) => ({ ...prev, brand: e.target.value }))}
+                    onChange={(e) => setProductForm((prev:any) => ({ ...prev, brand: e.target.value }))}
                     placeholder="Enter brand name"
                   />
                 </div>
@@ -729,15 +733,15 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                     type="number"
                     step="0.01"
                     value={productForm.price}
-                    onChange={(e) => setProductForm((prev) => ({ ...prev, price: e.target.value }))}
+                    onChange={(e) => setProductForm((prev:any) => ({ ...prev, price: e.target.value }))}
                     placeholder="0.00"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-category">Category</Label>
                   <Select
-                    value={productForm.categoryId}
-                    onValueChange={(value) => setProductForm((prev) => ({ ...prev, categoryId: value }))}
+                    value={productForm.category_id}
+                    onValueChange={(value) => setProductForm((prev:any) => ({ ...prev, category_id: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
@@ -758,7 +762,7 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                 <Textarea
                   id="edit-description"
                   value={productForm.description}
-                  onChange={(e) => setProductForm((prev) => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) => setProductForm((prev:any) => ({ ...prev, description: e.target.value }))}
                   placeholder="Enter product description"
                   rows={3}
                 />
@@ -767,26 +771,26 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
               {/* Image URLs */}
               <div className="space-y-2">
                 <Label>Image URLs</Label>
-                {productForm.imageUrls.map((url, index) => (
+                {productForm?.image_urls?.length > 0 && productForm.image_urls.map((url:any, index:any) => (
                   <div key={index} className="flex gap-2">
                     <Input
                       value={url}
-                      onChange={(e) => updateArrayField("imageUrls", index, e.target.value)}
+                      onChange={(e) => updateArrayField("image_urls", index, e.target.value)}
                       placeholder="Enter image URL"
                     />
-                    {productForm.imageUrls.length > 1 && (
+                    {productForm.image_urls.length > 1 && (
                       <Button
                         type="button"
                         variant="outline"
                         size="icon"
-                        onClick={() => removeArrayField("imageUrls", index)}
+                        onClick={() => removeArrayField("image_urls", index)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     )}
                   </div>
                 ))}
-                <Button type="button" variant="outline" onClick={() => addArrayField("imageUrls")}>
+                <Button type="button" variant="outline" onClick={() => addArrayField("image_urls")}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Image URL
                 </Button>
@@ -795,7 +799,7 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
               {/* Sizes */}
               <div className="space-y-2">
                 <Label>Available Sizes</Label>
-                {productForm.sizes.map((size, index) => (
+                {productForm.sizes.map((size:any, index:any) => (
                   <div key={index} className="flex gap-2">
                     <Input
                       value={size}
@@ -823,7 +827,7 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
               {/* Colors */}
               <div className="space-y-2">
                 <Label>Available Colors</Label>
-                {productForm.colors.map((color, index) => (
+                {productForm.colors.map((color:any, index:any) => (
                   <div key={index} className="flex gap-2">
                     <Input
                       value={color}

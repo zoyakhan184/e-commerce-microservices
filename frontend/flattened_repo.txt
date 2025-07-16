@@ -8656,7 +8656,7 @@ export default function CategoryPage() {
   const gender = params.gender as string
 
   const [filters, setFilters] = useState({
-    categoryId: "",
+    category_id: "",
     brand: "",
     priceRange: "",
     sortBy: "",
@@ -10868,8 +10868,8 @@ export default function AdminProductsPage() {
     description: "",
     price: "",
     brand: "",
-    categoryId: "",
-    imageUrls: [""],
+    category_id: "",
+    image_urls: [""],
     sizes: [""],
     colors: [""],
   })
@@ -10896,7 +10896,7 @@ export default function AdminProductsPage() {
         product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.toLowerCase())
 
-      const matchesCategory = selectedCategory === "all" || product.categoryId === selectedCategory
+      const matchesCategory = selectedCategory === "all" || product.category_id === selectedCategory
 
       return matchesSearch && matchesCategory
     }) || []
@@ -10908,8 +10908,8 @@ export default function AdminProductsPage() {
         description: productForm.description,
         price: Number.parseFloat(productForm.price),
         brand: productForm.brand,
-        categoryId: productForm.categoryId,
-        imageUrls: productForm.imageUrls.filter((url) => url.trim() !== ""),
+        category_id: productForm.category_id,
+        image_urls: productForm.image_urls.filter((url) => url.trim() !== ""),
         sizes: productForm.sizes.filter((size) => size.trim() !== ""),
         colors: productForm.colors.filter((color) => color.trim() !== ""),
       })
@@ -10938,8 +10938,8 @@ export default function AdminProductsPage() {
         description: productForm.description,
         price: Number.parseFloat(productForm.price),
         brand: productForm.brand,
-        categoryId: productForm.categoryId,
-        imageUrls: productForm.imageUrls.filter((url) => url.trim() !== ""),
+        category_id: productForm.category_id,
+        image_urls: productForm.image_urls.filter((url) => url.trim() !== ""),
         sizes: productForm.sizes.filter((size) => size.trim() !== ""),
         colors: productForm.colors.filter((color) => color.trim() !== ""),
       })
@@ -10988,8 +10988,8 @@ export default function AdminProductsPage() {
       description: product.description,
       price: product.price.toString(),
       brand: product.brand,
-      categoryId: product.categoryId,
-      imageUrls: product.imageUrls.length > 0 ? product.imageUrls : [""],
+      category_id: product.category_id,
+      image_urls: product.image_urls.length > 0 ? product.image_urls : [""],
       sizes: product.sizes?.length > 0 ? product.sizes : [""],
       colors: product.colors?.length > 0 ? product.colors : [""],
     })
@@ -11002,28 +11002,28 @@ export default function AdminProductsPage() {
       description: "",
       price: "",
       brand: "",
-      categoryId: "",
-      imageUrls: [""],
+      category_id: "",
+      image_urls: [""],
       sizes: [""],
       colors: [""],
     })
   }
 
-  const addArrayField = (field: "imageUrls" | "sizes" | "colors") => {
+  const addArrayField = (field: "image_urls" | "sizes" | "colors") => {
     setProductForm((prev) => ({
       ...prev,
       [field]: [...prev[field], ""],
     }))
   }
 
-  const updateArrayField = (field: "imageUrls" | "sizes" | "colors", index: number, value: string) => {
+  const updateArrayField = (field: "image_urls" | "sizes" | "colors", index: number, value: string) => {
     setProductForm((prev) => ({
       ...prev,
       [field]: prev[field].map((item, i) => (i === index ? value : item)),
     }))
   }
 
-  const removeArrayField = (field: "imageUrls" | "sizes" | "colors", index: number) => {
+  const removeArrayField = (field: "image_urls" | "sizes" | "colors", index: number) => {
     setProductForm((prev) => ({
       ...prev,
       [field]: prev[field].filter((_, i) => i !== index),
@@ -11120,8 +11120,8 @@ export default function AdminProductsPage() {
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
                     <Select
-                      value={productForm.categoryId}
-                      onValueChange={(value) => setProductForm((prev) => ({ ...prev, categoryId: value }))}
+                      value={productForm.category_id}
+                      onValueChange={(value) => setProductForm((prev) => ({ ...prev, category_id: value }))}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select category" />
@@ -11151,26 +11151,26 @@ export default function AdminProductsPage() {
                 {/* Image URLs */}
                 <div className="space-y-2">
                   <Label>Image URLs</Label>
-                  {productForm.imageUrls.map((url, index) => (
+                  {productForm.image_urls.map((url, index) => (
                     <div key={index} className="flex gap-2">
                       <Input
                         value={url}
-                        onChange={(e) => updateArrayField("imageUrls", index, e.target.value)}
+                        onChange={(e) => updateArrayField("image_urls", index, e.target.value)}
                         placeholder="Enter image URL"
                       />
-                      {productForm.imageUrls.length > 1 && (
+                      {productForm.image_urls.length > 1 && (
                         <Button
                           type="button"
                           variant="outline"
                           size="icon"
-                          onClick={() => removeArrayField("imageUrls", index)}
+                          onClick={() => removeArrayField("image_urls", index)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       )}
                     </div>
                   ))}
-                  <Button type="button" variant="outline" onClick={() => addArrayField("imageUrls")}>
+                  <Button type="button" variant="outline" onClick={() => addArrayField("image_urls")}>
                     <Plus className="h-4 w-4 mr-2" />
                     Add Image URL
                   </Button>
@@ -11351,7 +11351,7 @@ export default function AdminProductsPage() {
                           <div className="flex items-center space-x-3">
                             <div className="relative h-12 w-12 flex-shrink-0">
                               <Image
-                                src={product.imageUrls[0] || "/placeholder.svg?height=48&width=48"}
+                                src={product.image_urls[0] || "/placeholder.svg?height=48&width=48"}
                                 alt={product.name}
                                 fill
                                 className="object-cover rounded-md"
@@ -11364,7 +11364,7 @@ export default function AdminProductsPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {categories?.find((cat) => cat.id === product.categoryId)?.name || "Unknown"}
+                          {categories?.find((cat) => cat.id === product.category_id)?.name || "Unknown"}
                         </TableCell>
                         <TableCell>{product.brand}</TableCell>
                         <TableCell className="font-semibold">${product.price.toFixed(2)}</TableCell>
@@ -11458,8 +11458,8 @@ export default function AdminProductsPage() {
                 <div className="space-y-2">
                   <Label htmlFor="edit-category">Category</Label>
                   <Select
-                    value={productForm.categoryId}
-                    onValueChange={(value) => setProductForm((prev) => ({ ...prev, categoryId: value }))}
+                    value={productForm.category_id}
+                    onValueChange={(value) => setProductForm((prev) => ({ ...prev, category_id: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
@@ -11489,26 +11489,26 @@ export default function AdminProductsPage() {
               {/* Image URLs */}
               <div className="space-y-2">
                 <Label>Image URLs</Label>
-                {productForm.imageUrls.map((url, index) => (
+                {productForm.image_urls.map((url, index) => (
                   <div key={index} className="flex gap-2">
                     <Input
                       value={url}
-                      onChange={(e) => updateArrayField("imageUrls", index, e.target.value)}
+                      onChange={(e) => updateArrayField("image_urls", index, e.target.value)}
                       placeholder="Enter image URL"
                     />
-                    {productForm.imageUrls.length > 1 && (
+                    {productForm.image_urls.length > 1 && (
                       <Button
                         type="button"
                         variant="outline"
                         size="icon"
-                        onClick={() => removeArrayField("imageUrls", index)}
+                        onClick={() => removeArrayField("image_urls", index)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     )}
                   </div>
                 ))}
-                <Button type="button" variant="outline" onClick={() => addArrayField("imageUrls")}>
+                <Button type="button" variant="outline" onClick={() => addArrayField("image_urls")}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Image URL
                 </Button>
@@ -11674,7 +11674,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
 export default function ProductsPage() {
   const [filters, setFilters] = useState({
-    categoryId: "",
+    category_id: "",
     brand: "",
     priceRange: "",
     sortBy: "",
@@ -18894,7 +18894,7 @@ import type { Category } from "@/types/category" // Declare the Category variabl
 
 interface ProductFiltersProps {
   filters: {
-    categoryId: string
+    category_id: string
     brand: string
     priceRange: string
     sortBy: string
@@ -18920,7 +18920,7 @@ export function ProductFilters({ filters, onFiltersChange, categories }: Product
 
   const clearFilters = () => {
     onFiltersChange({
-      categoryId: "",
+      category_id: "",
       brand: "",
       priceRange: "",
       sortBy: "",
@@ -18949,7 +18949,7 @@ export function ProductFilters({ filters, onFiltersChange, categories }: Product
           {allCategories && allCategories.length > 0 && (
             <div className="space-y-2">
               <Label>Category</Label>
-              <Select value={filters.categoryId} onValueChange={(value) => handleFilterChange("categoryId", value)}>
+              <Select value={filters.category_id} onValueChange={(value) => handleFilterChange("category_id", value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="All categories" />
                 </SelectTrigger>
@@ -19067,7 +19067,7 @@ export function ProductCard({ product }: ProductCardProps) {
     addToCart({
       product_id: product.id,
       product_name: product.name,
-      product_image: product.imageUrls[0],
+      product_image: product.image_urls[0],
       size: product.sizes?.[0] || "One Size",
       color: product.colors?.[0] || "Default",
       price: product.price,
@@ -19093,7 +19093,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="relative overflow-hidden">
         <div className="aspect-square relative">
           <Image
-            src={product.imageUrls[0] || "/placeholder.svg"}
+            src={product.image_urls[0] || "/placeholder.svg"}
             alt={product.name}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -19346,7 +19346,7 @@ export const cartApi = {
       return {
         ...item,
         product_name: product?.name || item.product_name,
-        product_image: product?.imageUrls[0] || item.product_image,
+        product_image: product?.image_urls[0] || item.product_image,
         price: product?.price || item.price,
       }
     })
@@ -19380,7 +19380,7 @@ export const cartApi = {
       const newItem: CartItem = {
         product_id: productId,
         product_name: product.name,
-        product_image: product.imageUrls[0],
+        product_image: product.image_urls[0],
         size,
         color,
         quantity,
@@ -19515,15 +19515,15 @@ class ApiClient {
         const params = new URLSearchParams(urlParts[1] || "")
         const gender = params.get("gender")
         const search = params.get("search")
-        const categoryId = params.get("categoryId")
+        const category_id = params.get("category_id")
         const brand = params.get("brand")
 
         let filteredProducts = [...dummyProducts]
 
         if (gender) {
           const genderCategories = dummyCategories.filter((cat) => cat.gender.toLowerCase() === gender.toLowerCase())
-          const categoryIds = genderCategories.map((cat) => cat.id)
-          filteredProducts = filteredProducts.filter((product) => categoryIds.includes(product.categoryId))
+          const category_ids = genderCategories.map((cat) => cat.id)
+          filteredProducts = filteredProducts.filter((product) => category_ids.includes(product.category_id))
         }
 
         if (search) {
@@ -19534,8 +19534,8 @@ class ApiClient {
           )
         }
 
-        if (categoryId && categoryId !== "all") {
-          filteredProducts = filteredProducts.filter((product) => product.categoryId === categoryId)
+        if (category_id && category_id !== "all") {
+          filteredProducts = filteredProducts.filter((product) => product.category_id === category_id)
         }
 
         if (brand && brand !== "all") {
@@ -19778,7 +19778,7 @@ import type { Product, Category } from "@/types"
 
 export const productsApi = {
   getProducts: (params?: {
-    categoryId?: string
+    category_id?: string
     brand?: string
     priceRange?: string
     sortBy?: string
@@ -19912,8 +19912,8 @@ export interface Product {
   price: number
   originalPrice?: number
   brand: string
-  categoryId: string
-  imageUrls: string[]
+  category_id: string
+  image_urls: string[]
   sizes?: string[]
   colors?: string[]
 }

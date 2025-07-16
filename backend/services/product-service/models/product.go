@@ -6,7 +6,7 @@ type Product struct {
 	ID          string `gorm:"primaryKey"`
 	Name        string
 	Description string
-	CategoryID  string
+	CategoryId string
 	Price       float64
 	Brand       string
 	CreatedAt   time.Time

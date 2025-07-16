@@ -13,8 +13,9 @@ import { useAuth } from "@/contexts/auth-context"
 import { Header } from "@/components/layout/header"
 import { CreditCard, Truck, Calendar } from "lucide-react"
 import { orderApi } from "@/lib/api/order"
+
 export default function PaymentPage() {
-  const { items, totalPrice, clearCart } = useCart()
+  const { items, totalPrice } = useCart()
   const { user } = useAuth()
   const router = useRouter()
 
@@ -38,28 +39,33 @@ export default function PaymentPage() {
   const finalTotal = totalPrice + shippingCost + tax
 
   const handlePayment = async () => {
-  setIsProcessing(true)
+    setIsProcessing(true)
+    try {
+      if (paymentMethod === "card") {
+        // TODO: Stripe integration
+        return
+      }
 
-  try {
-    if (paymentMethod === "card") {
-      // TODO: Stripe integration
-      return
+      const response = await orderApi.placeOrder(
+        items.map((item) => ({
+          product_id: item.product_id,
+          quantity: item.quantity,
+        }))
+      )
+      console.log("response: ",response)
+      //await orderApi.clearCart()
+      //clearCart()
+      setOrderId(response.orderId)
+      setShowConfirmation(true)
+    } catch (err) {
+      console.error("❌ Payment error:", err)
+      alert("Something went wrong while placing your order.")
+    } finally {
+      setTimeout(() => {
+        setIsProcessing(false)
+      }, 1500)
     }
-
-    const response = await orderApi.placeOrder()     // ✅ Real order created
-    await orderApi.clearCart()                        // ✅ Backend cart cleared
-    clearCart()                                       // ✅ Frontend cart cleared
-    setOrderId(response.orderId)
-    setShowConfirmation(true)
-  } catch (err) {
-    console.error("❌ Payment error:", err)
-  } finally {
-    setTimeout(() => {
-      setIsProcessing(false)
-    }, 1500)
   }
-}
-
 
   const expectedDelivery = new Date()
   expectedDelivery.setDate(expectedDelivery.getDate() + 5)
@@ -97,7 +103,6 @@ export default function PaymentPage() {
                         </div>
                       </div>
                     )}
-
                     <div className="flex items-center space-x-3 p-4 border rounded-lg">
                       <RadioGroupItem value="cod" id="cod" />
                       <Label htmlFor="cod" className="flex items-center gap-2 cursor-pointer">
@@ -109,7 +114,7 @@ export default function PaymentPage() {
                 </CardContent>
               </Card>
 
-              {/* Delivery Information */}
+              {/* Delivery Info */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -143,16 +148,13 @@ export default function PaymentPage() {
                   <CardTitle>Order Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {items.map((item) => (
+                  {items.map((item:any) => (
                     <div key={`${item.product_id}-${item.size}-${item.color}`} className="flex gap-3">
-                      <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden relative">
+                      <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden relative">
                         <Image
                           src={
-                            item.image_url?.startsWith("data:image")
-                              ? item.image_url.replace(
-                                  /^data:image\/jpeg;base64,?data:image\/jpeg;base64,?/,
-                                  "data:image/jpeg;base64,"
-                                )
+                            item?.image_url?.startsWith("data:image")
+                              ? item.image_url.replace(/^data:image\/jpeg;base64,?data:image\/jpeg;base64,?/, "data:image/jpeg;base64,")
                               : `/images/${item.image_url || "placeholder.svg"}`
                           }
                           alt={item.product_name}
@@ -163,9 +165,7 @@ export default function PaymentPage() {
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium text-sm">{item.product_name}</h4>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {item.size} • {item.color}
-                        </p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">{item.size} • {item.color}</p>
                         <p className="text-xs text-gray-600 dark:text-gray-400">Qty: {item.quantity}</p>
                       </div>
                       <div className="text-right">
@@ -173,7 +173,6 @@ export default function PaymentPage() {
                       </div>
                     </div>
                   ))}
-
                   <div className="border-t pt-4 space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Subtotal</span>
@@ -206,7 +205,7 @@ export default function PaymentPage() {
                     ) : paymentMethod === "card" ? (
                       `Pay $${finalTotal.toFixed(2)}`
                     ) : (
-                      "Place Order"
+                      "Place Orderkkkk"
                     )}
                   </Button>
                 </CardContent>
@@ -216,7 +215,7 @@ export default function PaymentPage() {
         </div>
       </div>
 
-      {/* Order Confirmation Modal */}
+      {/* Order Confirmation */}
       {showConfirmation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-sm text-center space-y-4 shadow-lg">
@@ -229,10 +228,10 @@ export default function PaymentPage() {
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
               onClick={() => {
                 setShowConfirmation(false)
-                router.push("/products")
+                router.push("/orders")
               }}
             >
-              Explore More
+              View My Orders
             </Button>
           </div>
         </div>

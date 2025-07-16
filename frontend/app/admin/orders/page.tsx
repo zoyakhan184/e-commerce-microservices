@@ -20,67 +20,70 @@ import {
 import {
   Search, MoreHorizontal, Eye, Edit, Package, Clock, CheckCircle, RotateCcw
 } from "lucide-react"
-import { orderApi } from "@/lib/api/order"
+import { adminApi } from "@/lib/api/admin"
 import { useToast } from "@/hooks/use-toast"
-import type { Order } from "@/types"
+import type { Order, User } from "@/types"
 
 export default function AdminOrdersPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedTab, setSelectedTab] = useState("all")
   const { toast } = useToast()
 
-  const {
-    data: orders,
-    isLoading,
-    refetch,
-  } = useQuery({
+  const { data: orders } = useQuery({
     queryKey: ["admin-orders"],
-    queryFn: orderApi.getOrders, // ✅ Updated
+    queryFn: adminApi.getOrders,
   })
 
-  const filteredOrders = orders?.filter((order) => {
-    const matchesSearch =
-      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.items.some((item) => item.product_name?.toLowerCase().includes(searchQuery.toLowerCase()))
+  const { data: users } = useQuery({
+    queryKey: ["admin-users"],
+    queryFn: adminApi.getUsers,
+  })
 
-    const matchesTab =
-      selectedTab === "all" ||
-      (selectedTab === "pending" && order.status === "pending") ||
-      (selectedTab === "in_progress" && order.status === "in_progress") ||
-      (selectedTab === "completed" && order.status === "completed") ||
-      (selectedTab === "delivered" && order.status === "delivered") ||
-      (selectedTab === "returned" && order.status === "returned")
+  // ✅ Correct user map using user_id
+  const userMap = new Map(users?.map((u: any) => [u.user_id, u.email]) || [])
+  const getUserEmail = (userId: string) => userMap.get(userId) || "Unknown User"
 
-    return matchesSearch && matchesTab
-  }) || []
+  const filteredOrders = (orders || [])
+    .filter((order) => {
+      const email = getUserEmail(order.user_id).toLowerCase()
+      const matchesSearch =
+        order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        email.includes(searchQuery.toLowerCase()) ||
+        order.items?.some((item) =>
+          item.product_name?.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+
+      const matchesTab =
+        selectedTab === "all" || selectedTab === order.status
+
+      return matchesSearch && matchesTab
+    })
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
   const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
-      // You may need to rewire this if `orderApi.updateOrderStatus` is not exposed
-      // You can replug `adminApi.updateOrderStatus` here if only admin can change statuses
+      await adminApi.updateOrderStatus(orderId, newStatus)
       toast({
-        title: "Order update not implemented",
-        description: "Hook up updateOrderStatus to orderApi or adminApi.",
-        variant: "destructive",
+        title: "Order Updated",
+        description: `Order #${orderId} marked as ${newStatus}`,
       })
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error?.response?.data?.message || "Failed to update order status. Please try again.",
+        description: error?.response?.data?.message || "Failed to update order status.",
         variant: "destructive",
       })
     }
   }
 
   const getStatusBadge = (status: string) => {
-    type BadgeVariant = "default" | "destructive" | "secondary" | "outline";
-    const statusConfig: Record<string, { variant: BadgeVariant, color: string, icon: React.ElementType }> = {
+    const statusConfig = {
       pending: { variant: "secondary", color: "bg-yellow-100 text-yellow-700", icon: Clock },
       in_progress: { variant: "default", color: "bg-blue-100 text-blue-700", icon: Package },
       completed: { variant: "default", color: "bg-green-100 text-green-700", icon: CheckCircle },
       delivered: { variant: "default", color: "bg-green-100 text-green-700", icon: CheckCircle },
       returned: { variant: "destructive", color: "bg-red-100 text-red-700", icon: RotateCcw },
-    }
+    } as const
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending
     const Icon = config.icon
@@ -88,12 +91,10 @@ export default function AdminOrdersPage() {
     return (
       <Badge variant={config.variant} className={config.color}>
         <Icon className="h-3 w-3 mr-1" />
-        {status.replace("_", " ")}
+        {String(status).replace("_", " ")}
       </Badge>
     )
   }
-
-  const getUserName = (userId: string) => userId // You can enhance this with a user lookup if needed
 
   const getOrderStats = () => {
     if (!orders) return { total: 0, pending: 0, in_progress: 0, completed: 0, delivered: 0, returned: 0 }
@@ -115,7 +116,9 @@ export default function AdminOrdersPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Orders Management</h1>
-            <p className="text-muted-foreground">Monitor and manage all customer orders ({stats.total} orders)</p>
+            <p className="text-muted-foreground">
+              Monitor and manage all customer orders ({stats.total} orders)
+            </p>
           </div>
         </div>
 
@@ -161,10 +164,10 @@ export default function AdminOrdersPage() {
                 <div className="relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Search orders..."
+                    placeholder="Search by Order ID, Product, Email..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 w-64"
+                    className="pl-8 w-80"
                   />
                 </div>
               </div>
@@ -175,9 +178,9 @@ export default function AdminOrdersPage() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Order ID</TableHead>
-                        <TableHead>Customer</TableHead>
+                        <TableHead>User Email</TableHead>
                         <TableHead>Items</TableHead>
-                        <TableHead>Total Amount</TableHead>
+                        <TableHead>Total</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Payment</TableHead>
                         <TableHead>Date</TableHead>
@@ -188,24 +191,24 @@ export default function AdminOrdersPage() {
                       {filteredOrders.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                            No orders found matching your criteria.
+                            No orders found.
                           </TableCell>
                         </TableRow>
                       ) : (
                         filteredOrders.map((order) => (
                           <TableRow key={order.id}>
                             <TableCell className="font-medium">#{order.id}</TableCell>
-                            <TableCell>{getUserName(order.user_id)}</TableCell>
+                            <TableCell>{getUserEmail(order.user_id)}</TableCell>
                             <TableCell>
                               <div className="space-y-1">
-                                {order.items.slice(0, 2).map((item, i) => (
+                                {order.items?.slice(0, 2).map((item, i) => (
                                   <div key={i} className="text-sm">
-                                    {item.product_name} x{item.quantity}
+                                    {item.product_name || item.product_id} x{item.quantity}
                                   </div>
                                 ))}
-                                {order.items.length > 2 && (
+                                {order.items?.length > 2 && (
                                   <div className="text-xs text-muted-foreground">
-                                    +{order.items.length - 2} more items
+                                    +{order.items.length - 2} more
                                   </div>
                                 )}
                               </div>
@@ -235,14 +238,22 @@ export default function AdminOrdersPage() {
                                 <DropdownMenuContent align="end">
                                   <DropdownMenuItem>
                                     <Eye className="h-4 w-4 mr-2" />
-                                    View Details
+                                    View
                                   </DropdownMenuItem>
                                   <DropdownMenuItem>
                                     <Edit className="h-4 w-4 mr-2" />
-                                    Edit Order
+                                    Edit
                                   </DropdownMenuItem>
                                   <DropdownMenuSeparator />
-                                  {/* You can rewire below handlers based on actual status change support */}
+                                  {["pending", "in_progress", "completed", "delivered", "returned"].map((status) => (
+                                    <DropdownMenuItem
+                                      key={status}
+                                      onClick={() => handleUpdateOrderStatus(order.id, status)}
+                                    >
+                                      <Package className="h-4 w-4 mr-2" />
+                                      Mark as {status.replace("_", " ")}
+                                    </DropdownMenuItem>
+                                  ))}
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </TableCell>

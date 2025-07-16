@@ -63,6 +63,7 @@ func SetupRouter() *gin.Engine {
 		orderGroup.GET("", handlers.GetOrders)
 		orderGroup.GET("/:id", handlers.GetOrderDetails)
 		orderGroup.PUT("/:id/status", handlers.UpdateOrderStatus)
+		//orderGroup.POST("", handlers.ListAllOrders)
 	}
 
 	// Reviews (protected)

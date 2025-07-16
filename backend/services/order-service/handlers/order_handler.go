@@ -109,3 +109,19 @@ func (s *OrderService) GenerateInvoice(ctx context.Context, req *orderpb.Generat
 		InvoiceText: invoice,
 	}, nil
 }
+
+func (s *OrderService) ListAllOrders(ctx context.Context, _ *orderpb.ListAllOrdersRequest) (*orderpb.ListAllOrdersResponse, error) {
+	orders, _ := s.Repo.GetAllOrders()
+	var res []*orderpb.Order
+	for _, o := range orders {
+		res = append(res, &orderpb.Order{
+			Id:            o.ID,
+			UserId:        o.UserID,
+			OrderStatus:   o.OrderStatus,
+			PaymentStatus: o.PaymentStatus,
+			TotalAmount:   o.TotalAmount,
+			CreatedAt:     o.CreatedAt.String(),
+		})
+	}
+	return &orderpb.ListAllOrdersResponse{Orders: res}, nil
+}

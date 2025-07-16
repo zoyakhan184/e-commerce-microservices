@@ -16,8 +16,7 @@ export interface Product {
   price: number
   originalPrice?: number
   brand: string
-  categoryId: string
-  imageUrls: string[]
+  category_id?: string
   image_urls?: string[] // For compatibility with existing code
   sizes?: string[]
   colors?: string[]

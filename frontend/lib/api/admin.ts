@@ -49,14 +49,24 @@ export const adminApi = {
     await axios.delete(`/products/${productId}`)
   },
 
-  getOrders: async (): Promise<Order[]> => {
-    const res = await axios.get("/admin/orders")
-    return res.data.orders
-  },
+ getOrders: async (): Promise<Order[]> => {
+  const res = await axios.get("/admin/orders")
+
+  return res.data.map((o: any) => ({
+    id: o.order_id,
+    user_id: o.user_id,
+    status: o.status || o.order_status,  // 👈 key fix
+    payment_status: o.payment_status || "unpaid",
+    total_amount: o.total_amount,
+    created_at: o.created_at,
+    items: o.items || [],
+  }))
+},
 
   updateOrderStatus: async (orderId: string, status: string): Promise<void> => {
-    await axios.put(`/orders/${orderId}/status`, { status })
-  },
+  await axios.put(`/orders/${orderId}/status`, { status })
+}
+,
 
   getPayments: async (): Promise<Payment[]> => {
     const res = await axios.get("/payments")

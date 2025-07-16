@@ -87,7 +87,7 @@ func AddAddress(c *gin.Context) {
 	}
 	req.UserId = userID
 
-	log.Printf("[AddAddress] 📦 Payload: %+v", req)
+	//log.Printf("[AddAddress] 📦 Payload: %+v", req)
 
 	resp, err := clients.UserClient().AddAddress(c, &req)
 	if err != nil {
@@ -112,7 +112,7 @@ func UpdateAddress(c *gin.Context) {
 	}
 	req.UserId = userID
 
-	log.Printf("[UpdateAddress] 📦 Payload: %+v", req)
+	//log.Printf("[UpdateAddress] 📦 Payload: %+v", req)
 
 	resp, err := clients.UserClient().UpdateAddress(c, &req)
 	if err != nil {
@@ -216,29 +216,29 @@ func GetWishlist(c *gin.Context) {
 		Price       float32 `json:"price"`
 		ImageUrl    string  `json:"image_url"`
 	}
-	
+
 	// 2. Build enriched product data
-		var enriched []*WishlistItem
-		for _, productID := range resp.ProductIds {
-			productResp, err := clients.ProductClient().GetProduct(c, &productpb.ProductIdRequest{Id: productID})
-			if err != nil {
-				log.Printf("[GetWishlist] ⚠️ Failed to fetch product %s: %v", productID, err)
-				continue
-			}
-	
-			var imageUrl string
-			if len(productResp.ImageUrls) > 0 {
-				imageUrl = fmt.Sprintf("data:image/jpeg;base64,%s", productResp.ImageUrls[0])
-			}
-	
-			enriched = append(enriched, &WishlistItem{
-				ProductID:   productResp.Id,
-				Name:        productResp.Name,
-				Description: productResp.Description,
-				Price:       float32(productResp.Price),
-				ImageUrl:    imageUrl,
-			})
+	var enriched []*WishlistItem
+	for _, productID := range resp.ProductIds {
+		productResp, err := clients.ProductClient().GetProduct(c, &productpb.ProductIdRequest{Id: productID})
+		if err != nil {
+			log.Printf("[GetWishlist] ⚠️ Failed to fetch product %s: %v", productID, err)
+			continue
 		}
+
+		var imageUrl string
+		if len(productResp.ImageUrls) > 0 {
+			imageUrl = fmt.Sprintf("data:image/jpeg;base64,%s", productResp.ImageUrls[0])
+		}
+
+		enriched = append(enriched, &WishlistItem{
+			ProductID:   productResp.Id,
+			Name:        productResp.Name,
+			Description: productResp.Description,
+			Price:       float32(productResp.Price),
+			ImageUrl:    imageUrl,
+		})
+	}
 
 	// 3. Respond with full wishlist
 	utils.RespondWithJSON(c, http.StatusOK, gin.H{

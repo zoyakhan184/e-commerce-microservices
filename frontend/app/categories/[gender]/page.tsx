@@ -18,7 +18,7 @@ export default function CategoryPage() {
   const gender = params.gender as string
 
   const [filters, setFilters] = useState({
-    categoryId: "",
+    category_id: "",
     brand: "",
     priceRange: "",
     sortBy: "",

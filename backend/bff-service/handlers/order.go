@@ -71,9 +71,10 @@ func GetOrderDetails(c *gin.Context) {
 }
 
 func UpdateOrderStatus(c *gin.Context) {
+	orderID := c.Param("id") // get from URL
+
 	var req struct {
-		OrderId string `json:"order_id" binding:"required"`
-		Status  string `json:"status" binding:"required"`
+		Status string `json:"status" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -82,7 +83,7 @@ func UpdateOrderStatus(c *gin.Context) {
 	}
 
 	resp, err := clients.OrderClient().UpdateOrderStatus(c, &orderpb.UpdateOrderStatusRequest{
-		OrderId: req.OrderId,
+		OrderId: orderID,
 		Status:  req.Status,
 	})
 	if err != nil {
@@ -106,3 +107,12 @@ func GenerateInvoice(c *gin.Context) {
 		"invoice": resp.InvoiceText,
 	})
 }
+
+// func ListAllOrders(c *gin.Context) {
+// 	resp, err := clients.OrderClient().ListAllOrders(c, &orderpb.ListAllOrdersRequest{})
+// 	if err != nil {
+// 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to fetch orders")
+// 		return
+// 	}
+// 	utils.RespondWithJSON(c, http.StatusOK, resp.Orders)
+// }

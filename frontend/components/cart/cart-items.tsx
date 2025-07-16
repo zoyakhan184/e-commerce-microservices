@@ -57,10 +57,10 @@ export function CartItems() {
                 <img src={item.image_url} alt="" />
           <Image
           src={
-    item.image_url.startsWith("data:image")
-      ? item.image_url.replace(/^data:image\/jpeg;base64,?data:image\/jpeg;base64,?/, "data:image/jpeg;base64,")
-      : `/images/${item.image_url}` // fallback if not base64
-  }
+              item.image_url?.startsWith("data:image")
+                ? item.image_url.replace(/^data:image\/jpeg;base64,?data:image\/jpeg;base64,?/, "data:image/jpeg;base64,")
+                : `/images/${item.image_url}` // fallback if not base64
+            }
           alt={item.product_name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-300"

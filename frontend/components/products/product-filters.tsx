@@ -11,7 +11,7 @@ import type { Category } from "@/types/category" // Declare the Category variabl
 
 interface ProductFiltersProps {
   filters: {
-    categoryId: string
+    category_id: string
     brand: string
     priceRange: string
     sortBy: string
@@ -37,7 +37,7 @@ export function ProductFilters({ filters, onFiltersChange, categories }: Product
 
   const clearFilters = () => {
     onFiltersChange({
-      categoryId: "",
+      category_id: "",
       brand: "",
       priceRange: "",
       sortBy: "",
@@ -66,7 +66,7 @@ export function ProductFilters({ filters, onFiltersChange, categories }: Product
           {allCategories && allCategories.length > 0 && (
             <div className="space-y-2">
               <Label>Category</Label>
-              <Select value={filters.categoryId} onValueChange={(value) => handleFilterChange("categoryId", value)}>
+              <Select value={filters.category_id} onValueChange={(value) => handleFilterChange("category_id", value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="All categories" />
                 </SelectTrigger>

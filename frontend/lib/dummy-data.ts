@@ -95,8 +95,8 @@ export const dummyProducts: Product[] = [
     price: 29.99,
     originalPrice: 39.99,
     brand: "StyleNest",
-    categoryId: "cat-1",
-    imageUrls: [
+    category_id: "cat-1",
+    image_urls: [
       "/placeholder.svg?height=400&width=400&text=Cotton+T-Shirt",
       "/placeholder.svg?height=400&width=400&text=T-Shirt+Back",
       "/placeholder.svg?height=400&width=400&text=T-Shirt+Side",
@@ -111,8 +111,8 @@ export const dummyProducts: Product[] = [
     price: 89.99,
     originalPrice: 119.99,
     brand: "FashionForward",
-    categoryId: "cat-2",
-    imageUrls: [
+    category_id: "cat-2",
+    image_urls: [
       "/placeholder.svg?height=400&width=400&text=Summer+Dress",
       "/placeholder.svg?height=400&width=400&text=Dress+Back",
       "/placeholder.svg?height=400&width=400&text=Dress+Detail",
@@ -127,8 +127,8 @@ export const dummyProducts: Product[] = [
     price: 79.99,
     originalPrice: 99.99,
     brand: "DenimCo",
-    categoryId: "cat-3",
-    imageUrls: [
+    category_id: "cat-3",
+    image_urls: [
       "/placeholder.svg?height=400&width=400&text=Denim+Jeans",
       "/placeholder.svg?height=400&width=400&text=Jeans+Detail",
       "/placeholder.svg?height=400&width=400&text=Jeans+Back",
@@ -143,8 +143,8 @@ export const dummyProducts: Product[] = [
     price: 149.99,
     originalPrice: 199.99,
     brand: "LuxeFashion",
-    categoryId: "cat-4",
-    imageUrls: [
+    category_id: "cat-4",
+    image_urls: [
       "/placeholder.svg?height=400&width=400&text=Silk+Blouse",
       "/placeholder.svg?height=400&width=400&text=Blouse+Detail",
       "/placeholder.svg?height=400&width=400&text=Blouse+Back",
@@ -159,8 +159,8 @@ export const dummyProducts: Product[] = [
     price: 39.99,
     originalPrice: 49.99,
     brand: "KidsWear",
-    categoryId: "cat-5",
-    imageUrls: [
+    category_id: "cat-5",
+    image_urls: [
       "/placeholder.svg?height=400&width=400&text=Kids+Hoodie",
       "/placeholder.svg?height=400&width=400&text=Hoodie+Back",
       "/placeholder.svg?height=400&width=400&text=Hoodie+Detail",
@@ -175,8 +175,8 @@ export const dummyProducts: Product[] = [
     price: 129.99,
     originalPrice: 159.99,
     brand: "SportMax",
-    categoryId: "cat-6",
-    imageUrls: [
+    category_id: "cat-6",
+    image_urls: [
       "/placeholder.svg?height=400&width=400&text=Athletic+Sneakers",
       "/placeholder.svg?height=400&width=400&text=Sneakers+Side",
       "/placeholder.svg?height=400&width=400&text=Sneakers+Sole",
@@ -191,8 +191,8 @@ export const dummyProducts: Product[] = [
     price: 199.99,
     originalPrice: 249.99,
     brand: "LuxeBags",
-    categoryId: "cat-7",
-    imageUrls: [
+    category_id: "cat-7",
+    image_urls: [
       "/placeholder.svg?height=400&width=400&text=Designer+Handbag",
       "/placeholder.svg?height=400&width=400&text=Handbag+Interior",
       "/placeholder.svg?height=400&width=400&text=Handbag+Detail",
@@ -207,8 +207,8 @@ export const dummyProducts: Product[] = [
     price: 49.99,
     originalPrice: 69.99,
     brand: "ClassicWear",
-    categoryId: "cat-8",
-    imageUrls: [
+    category_id: "cat-8",
+    image_urls: [
       "/placeholder.svg?height=400&width=400&text=Polo+Shirt",
       "/placeholder.svg?height=400&width=400&text=Polo+Detail",
       "/placeholder.svg?height=400&width=400&text=Polo+Back",
@@ -223,8 +223,8 @@ export const dummyProducts: Product[] = [
     price: 45.99,
     originalPrice: 59.99,
     brand: "TrendyWear",
-    categoryId: "cat-9",
-    imageUrls: [
+    category_id: "cat-9",
+    image_urls: [
       "/placeholder.svg?height=400&width=400&text=Floral+Skirt",
       "/placeholder.svg?height=400&width=400&text=Skirt+Detail",
     ],
@@ -238,8 +238,8 @@ export const dummyProducts: Product[] = [
     price: 79.99,
     originalPrice: 99.99,
     brand: "WarmKids",
-    categoryId: "cat-10",
-    imageUrls: [
+    category_id: "cat-10",
+    image_urls: [
       "/placeholder.svg?height=400&width=400&text=Winter+Jacket",
       "/placeholder.svg?height=400&width=400&text=Jacket+Detail",
     ],

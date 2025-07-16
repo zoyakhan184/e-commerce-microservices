@@ -16,7 +16,7 @@ import { toast } from "sonner"
 
 export default function ProductsPage() {
   const [filters, setFilters] = useState({
-    categoryId: "",
+    category_id: "",
     brand: "",
     priceRange: "",
     sortBy: "",
@@ -53,7 +53,7 @@ export default function ProductsPage() {
             <div>
               <h1 className="text-3xl font-bold">All Products</h1>
               <p className="text-muted-foreground mt-2">
-                {isLoading ? "Loading products..." : `${products.length} products found`}
+                {isLoading ? "Loading products..." : `${products?.length} products found`}
               </p>
             </div>
 
@@ -93,7 +93,7 @@ export default function ProductsPage() {
                     : null}
               </div>
 
-              {!isLoading && products.length === 0 && (
+              {!isLoading && products?.length === 0 && (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground">No products match your filters.</p>
                 </div>
