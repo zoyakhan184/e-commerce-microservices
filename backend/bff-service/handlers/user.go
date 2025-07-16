@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"bff-service/clients"
+	productpb "bff-service/proto/product"
 	userpb "bff-service/proto/user"
 	"bff-service/utils"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -194,19 +196,54 @@ func RemoveFromWishlist(c *gin.Context) {
 	log.Printf("[RemoveFromWishlist] Success for user_id=%s, product_id=%s", userID, productID)
 	utils.RespondWithJSON(c, http.StatusOK, resp)
 }
-
 func GetWishlist(c *gin.Context) {
 	userID := c.GetString("user_id")
 	log.Printf("[GetWishlist] user_id=%s", userID)
 
+	// 1. Fetch wishlist product IDs from user-service
 	resp, err := clients.UserClient().GetWishlist(c, &userpb.UserRequest{UserId: userID})
 	if err != nil {
-		log.Printf("[GetWishlist] Failed to fetch wishlist for user_id=%s: %v", userID, err)
+		log.Printf("[GetWishlist] ❌ Failed to fetch wishlist: %v", err)
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to fetch wishlist")
 		return
 	}
-	log.Printf("[GetWishlist] Success for user_id=%s", userID)
-	utils.RespondWithJSON(c, http.StatusOK, resp)
+
+	// WishlistItem represents a product in the user's wishlist
+	type WishlistItem struct {
+		ProductID   string  `json:"product_id"`
+		Name        string  `json:"name"`
+		Description string  `json:"description"`
+		Price       float32 `json:"price"`
+		ImageUrl    string  `json:"image_url"`
+	}
+	
+	// 2. Build enriched product data
+		var enriched []*WishlistItem
+		for _, productID := range resp.ProductIds {
+			productResp, err := clients.ProductClient().GetProduct(c, &productpb.ProductIdRequest{Id: productID})
+			if err != nil {
+				log.Printf("[GetWishlist] ⚠️ Failed to fetch product %s: %v", productID, err)
+				continue
+			}
+	
+			var imageUrl string
+			if len(productResp.ImageUrls) > 0 {
+				imageUrl = fmt.Sprintf("data:image/jpeg;base64,%s", productResp.ImageUrls[0])
+			}
+	
+			enriched = append(enriched, &WishlistItem{
+				ProductID:   productResp.Id,
+				Name:        productResp.Name,
+				Description: productResp.Description,
+				Price:       float32(productResp.Price),
+				ImageUrl:    imageUrl,
+			})
+		}
+
+	// 3. Respond with full wishlist
+	utils.RespondWithJSON(c, http.StatusOK, gin.H{
+		"items": enriched,
+	})
 }
 
 func ListAllUserProfiles(c *gin.Context) {

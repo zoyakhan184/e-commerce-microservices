@@ -5,6 +5,7 @@ import (
 	cartpb "bff-service/proto/cart"
 	productpb "bff-service/proto/product"
 	"bff-service/utils"
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -137,4 +138,23 @@ func UpdateCartItem(c *gin.Context) {
 
 	log.Printf("[UpdateCartItem] ✅ Updated cart item for user %s", uid)
 	utils.RespondWithJSON(c, http.StatusOK, resp)
+}
+
+func ClearCart(c *gin.Context) {
+	userID := c.GetString("user_id")
+	if userID == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	req := &cartpb.UserRequest{UserId: userID}
+	_, err := clients.CartClient().ClearCart(context.Background(), req)
+	if err != nil {
+		log.Printf("[ClearCart] ❌ gRPC error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to clear cart"})
+		return
+	}
+
+	log.Printf("[ClearCart] ✅ Cleared cart for user %s", userID)
+	c.JSON(http.StatusOK, gin.H{"message": "Cart cleared successfully"})
 }

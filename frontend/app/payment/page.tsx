@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,15 +11,17 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useCart } from "@/contexts/cart-context"
 import { useAuth } from "@/contexts/auth-context"
 import { Header } from "@/components/layout/header"
-import { CreditCard, Smartphone, Wallet, Calendar, Truck } from "lucide-react"
-import { userApi } from "@/lib/api/user"
-
+import { CreditCard, Truck, Calendar } from "lucide-react"
+import { orderApi } from "@/lib/api/order"
 export default function PaymentPage() {
   const { items, totalPrice, clearCart } = useCart()
   const { user } = useAuth()
   const router = useRouter()
+
   const [paymentMethod, setPaymentMethod] = useState("card")
   const [isProcessing, setIsProcessing] = useState(false)
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [orderId, setOrderId] = useState<string | null>(null)
 
   if (!user) {
     router.push("/auth/login")
@@ -35,31 +38,28 @@ export default function PaymentPage() {
   const finalTotal = totalPrice + shippingCost + tax
 
   const handlePayment = async () => {
-    setIsProcessing(true)
-    try {
-      const payload = {
-        order_id: "order-" + new Date().getTime(),
-        amount: finalTotal,
-        currency: "USD",
-        user_id: user.id,
-        gateway: paymentMethod,
-        success_url: `${window.location.origin}/order-confirmation`,
-        cancel_url: `${window.location.origin}/checkout`,
-      }
+  setIsProcessing(true)
 
-      const res = await userApi.initiatePayment(payload)
-      if (res.url) {
-        window.location.href = res.url // Stripe redirect
-      } else {
-        clearCart()
-        router.push("/order-confirmation") // COD success
-      }
-    } catch (err) {
-      console.error("Payment error", err)
-    } finally {
-      setIsProcessing(false)
+  try {
+    if (paymentMethod === "card") {
+      // TODO: Stripe integration
+      return
     }
+
+    const response = await orderApi.placeOrder()     // ✅ Real order created
+    await orderApi.clearCart()                        // ✅ Backend cart cleared
+    clearCart()                                       // ✅ Frontend cart cleared
+    setOrderId(response.orderId)
+    setShowConfirmation(true)
+  } catch (err) {
+    console.error("❌ Payment error:", err)
+  } finally {
+    setTimeout(() => {
+      setIsProcessing(false)
+    }, 1500)
   }
+}
+
 
   const expectedDelivery = new Date()
   expectedDelivery.setDate(expectedDelivery.getDate() + 5)
@@ -87,6 +87,17 @@ export default function PaymentPage() {
                         Stripe (Card)
                       </Label>
                     </div>
+                    {paymentMethod === "card" && (
+                      <div className="mt-4 space-y-4 px-4">
+                        <Input type="text" placeholder="Cardholder Name" required />
+                        <Input type="text" placeholder="Card Number" required />
+                        <div className="flex gap-4">
+                          <Input type="text" placeholder="MM/YY" required className="flex-1" />
+                          <Input type="text" placeholder="CVC" required className="flex-1" />
+                        </div>
+                      </div>
+                    )}
+
                     <div className="flex items-center space-x-3 p-4 border rounded-lg">
                       <RadioGroupItem value="cod" id="cod" />
                       <Label htmlFor="cod" className="flex items-center gap-2 cursor-pointer">
@@ -134,11 +145,20 @@ export default function PaymentPage() {
                 <CardContent className="space-y-4">
                   {items.map((item) => (
                     <div key={`${item.product_id}-${item.size}-${item.color}`} className="flex gap-3">
-                      <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
-                        <img
-                          src={item.product_image || "/placeholder.svg"}
+                      <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden relative">
+                        <Image
+                          src={
+                            item.image_url?.startsWith("data:image")
+                              ? item.image_url.replace(
+                                  /^data:image\/jpeg;base64,?data:image\/jpeg;base64,?/,
+                                  "data:image/jpeg;base64,"
+                                )
+                              : `/images/${item.image_url || "placeholder.svg"}`
+                          }
                           alt={item.product_name}
-                          className="w-12 h-12 object-cover rounded"
+                          fill
+                          className="object-cover rounded"
+                          unoptimized
                         />
                       </div>
                       <div className="flex-1">
@@ -181,10 +201,12 @@ export default function PaymentPage() {
                     {isProcessing ? (
                       <div className="flex items-center gap-2">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                        Processing Payment...
+                        {paymentMethod === "card" ? "Processing Payment..." : "Placing Order..."}
                       </div>
-                    ) : (
+                    ) : paymentMethod === "card" ? (
                       `Pay $${finalTotal.toFixed(2)}`
+                    ) : (
+                      "Place Order"
                     )}
                   </Button>
                 </CardContent>
@@ -193,6 +215,28 @@ export default function PaymentPage() {
           </div>
         </div>
       </div>
+
+      {/* Order Confirmation Modal */}
+      {showConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-sm text-center space-y-4 shadow-lg">
+            <h2 className="text-xl font-semibold text-green-600">🎉 Congratulations!</h2>
+            <p className="text-gray-600 dark:text-gray-300">Your order has been placed successfully.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Order ID: <span className="font-medium">{orderId}</span>
+            </p>
+            <Button
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              onClick={() => {
+                setShowConfirmation(false)
+                router.push("/products")
+              }}
+            >
+              Explore More
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

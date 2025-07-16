@@ -128,67 +128,7 @@ func (s *ProductService) ListProducts(ctx context.Context, req *productpb.Produc
 	return &productpb.ProductList{Products: list}, nil
 }
 
-// func (s *ProductService) ListProducts(ctx context.Context, req *productpb.ProductFilter) (*productpb.ProductList, error) {
-// 	filters := make(map[string]interface{})
-// 	if req.CategoryId != "" {
-// 		filters["category_id"] = req.CategoryId
-// 	}
-// 	if req.Brand != "" {
-// 		filters["brand"] = req.Brand
-// 	}
 
-// 	products, err := s.Repo.ListProducts(filters)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	var list []*productpb.ProductResponse
-// 	for _, p := range products {
-// 		var urls []string
-
-// 		for _, img := range p.Images {
-// 			if img.ImageURL != "" {
-// 				// fullPath := filepath.Join("uploads", img.ImageURL)
-// 				fullPath := filepath.Join("../../image-service/uploads", img.ImageURL)
-
-// 				fmt.Print("image jdjdjdjdjdj", fullPath)
-// 				data, err := os.ReadFile(fullPath)
-// 				if err != nil {
-// 					fmt.Printf("❌ Failed to read image from disk: %v\n", err)
-// 					continue // skip if file can't be read
-// 				}
-// 				fmt.Print("image data", data)
-// 				// Determine MIME type based on extension
-// 				ext := filepath.Ext(img.ImageURL)
-// 				mimeType := "image/jpeg"
-// 				switch ext {
-// 				case ".png":
-// 					mimeType = "image/png"
-// 				case ".gif":
-// 					mimeType = "image/gif"
-// 				case ".webp":
-// 					mimeType = "image/webp"
-// 				}
-
-// 				base64Str := base64.StdEncoding.EncodeToString(data)
-// 				dataURI := fmt.Sprintf("data:%s;base64,%s", mimeType, base64Str)
-// 				urls = append(urls, dataURI)
-// 			}
-// 		}
-
-// 		list = append(list, &productpb.ProductResponse{
-// 			Id:          p.ID,
-// 			Name:        p.Name,
-// 			Description: p.Description,
-// 			CategoryId:  p.CategoryID,
-// 			Price:       p.Price,
-// 			Brand:       p.Brand,
-// 			ImageUrls:   urls, // now contains base64 data URIs
-// 		})
-// 	}
-
-//		return &productpb.ProductList{Products: list}, nil
-//	}
 func (s *ProductService) AddCategory(ctx context.Context, req *productpb.CategoryRequest) (*productpb.GenericResponse, error) {
 	var parentID *string
 	if req.ParentId != "" {

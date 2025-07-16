@@ -1,35 +1,64 @@
 package handlers
 
 import (
-  "bff-service/clients"
-  orderpb "bff-service/proto/order"
-  "bff-service/utils"
-  "github.com/gin-gonic/gin"
-  "net/http"
+	"bff-service/clients"
+	orderpb "bff-service/proto/order"
+	"bff-service/utils"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
+type CartItem struct {
+	ProductID string `json:"product_id" binding:"required"`
+	Quantity  int32  `json:"quantity" binding:"required"`
+}
+
+type PlaceOrderRequestBody struct {
+	Items []CartItem `json:"items" binding:"required,dive"`
+}
+
 func PlaceOrder(c *gin.Context) {
-  uid := c.GetString("user_id")
-  resp, err := clients.OrderClient().PlaceOrder(c, &orderpb.PlaceOrderRequest{UserId: uid})
-  if err != nil {
-    utils.RespondWithError(c, http.StatusInternalServerError, "Error")
-    return
-  }
-  utils.RespondWithJSON(c, http.StatusOK, resp)
+	uid := c.GetString("user_id")
+
+	var body PlaceOrderRequestBody
+	if err := c.ShouldBindJSON(&body); err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid input")
+		return
+	}
+
+	var items []*orderpb.CartItem
+	for _, i := range body.Items {
+		items = append(items, &orderpb.CartItem{
+			ProductId: i.ProductID,
+			Quantity:  i.Quantity,
+		})
+	}
+
+	resp, err := clients.OrderClient().PlaceOrder(c, &orderpb.PlaceOrderRequest{
+		UserId: uid,
+		Items:  items,
+	})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to place order")
+		return
+	}
+
+	utils.RespondWithJSON(c, http.StatusOK, resp)
 }
 
 func GetOrders(c *gin.Context) {
-  uid := c.GetString("user_id")
-  resp, err := clients.OrderClient().GetOrders(c, &orderpb.GetOrdersRequest{UserId: uid})
-  if err != nil {
-    utils.RespondWithError(c, http.StatusInternalServerError, "Error")
-    return
-  }
-  utils.RespondWithJSON(c, http.StatusOK, resp.Orders)
+	uid := c.GetString("user_id")
+	resp, err := clients.OrderClient().GetOrders(c, &orderpb.GetOrdersRequest{UserId: uid})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to fetch orders")
+		return
+	}
+	utils.RespondWithJSON(c, http.StatusOK, resp.Orders)
 }
 
 func GetOrderDetails(c *gin.Context) {
-	orderID := c.Param("order_id") // expect /api/orders/:order_id
+	orderID := c.Param("order_id")
 
 	resp, err := clients.OrderClient().GetOrderDetails(c, &orderpb.GetOrderDetailsRequest{
 		OrderId: orderID,
@@ -64,7 +93,7 @@ func UpdateOrderStatus(c *gin.Context) {
 }
 
 func GenerateInvoice(c *gin.Context) {
-	orderID := c.Param("order_id") // expect /api/orders/:order_id/invoice
+	orderID := c.Param("order_id")
 
 	resp, err := clients.OrderClient().GenerateInvoice(c, &orderpb.GenerateInvoiceRequest{
 		OrderId: orderID,

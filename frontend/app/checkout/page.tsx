@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -35,7 +36,6 @@ export default function CheckoutPage() {
     is_default: false,
   })
 
-  // 🚫 Redirects
   if (!user) {
     router.push("/auth/login")
     return null
@@ -46,7 +46,6 @@ export default function CheckoutPage() {
     return null
   }
 
-  // ✅ Fetch addresses
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
@@ -57,13 +56,9 @@ export default function CheckoutPage() {
         }
       } catch (err) {
         console.error("Failed to fetch addresses", err)
-        toast({
-          title: "Error loading addresses",
-          variant: "destructive",
-        })
+        toast({ title: "Error loading addresses", variant: "destructive" })
       }
     }
-
     fetchAddresses()
   }, [])
 
@@ -87,19 +82,13 @@ export default function CheckoutPage() {
       })
     } catch (err) {
       console.error("Failed to add address", err)
-      toast({
-        title: "Failed to add address",
-        variant: "destructive",
-      })
+      toast({ title: "Failed to add address", variant: "destructive" })
     }
   }
 
   const handleSetDefault = (addressId: string) => {
     setAddresses((prev) =>
-      prev.map((addr) => ({
-        ...addr,
-        is_default: addr.id === addressId,
-      })),
+      prev.map((addr) => ({ ...addr, is_default: addr.id === addressId }))
     )
   }
 
@@ -119,13 +108,11 @@ export default function CheckoutPage() {
           <h1 className="text-3xl font-bold mb-8">Checkout</h1>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Address Section */}
             <div className="lg:col-span-2 space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    Delivery Address
+                    <MapPin className="h-5 w-5" /> Delivery Address
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -163,8 +150,7 @@ export default function CheckoutPage() {
 
                   {!showAddressForm ? (
                     <Button variant="outline" onClick={() => setShowAddressForm(true)} className="w-full">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add New Address
+                      <Plus className="h-4 w-4 mr-2" /> Add New Address
                     </Button>
                   ) : (
                     <div className="border rounded-lg p-4 space-y-4">
@@ -233,8 +219,7 @@ export default function CheckoutPage() {
                       </div>
                       <div className="flex gap-2">
                         <Button onClick={handleAddAddress}>
-                          <Check className="h-4 w-4 mr-2" />
-                          Add Address
+                          <Check className="h-4 w-4 mr-2" /> Add Address
                         </Button>
                         <Button variant="outline" onClick={() => setShowAddressForm(false)}>
                           Cancel
@@ -246,7 +231,6 @@ export default function CheckoutPage() {
               </Card>
             </div>
 
-            {/* Order Summary */}
             <div>
               <Card>
                 <CardHeader>
@@ -255,11 +239,20 @@ export default function CheckoutPage() {
                 <CardContent className="space-y-4">
                   {items.map((item) => (
                     <div key={`${item.product_id}-${item.size}-${item.color}`} className="flex gap-3">
-                      <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
-                        <img
-                          src={item.product_image || "/placeholder.svg"}
+                      <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center overflow-hidden relative">
+                        <Image
+                          src={
+                            item.image_url?.startsWith("data:image")
+                              ? item.image_url.replace(
+                                  /^data:image\/jpeg;base64,?data:image\/jpeg;base64,?/,
+                                  "data:image/jpeg;base64,"
+                                )
+                              : `/images/${item.image_url || "placeholder.svg"}`
+                          }
                           alt={item.product_name}
-                          className="w-12 h-12 object-cover rounded"
+                          fill
+                          className="object-cover rounded"
+                          unoptimized
                         />
                       </div>
                       <div className="flex-1">

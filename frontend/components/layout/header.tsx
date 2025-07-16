@@ -43,7 +43,7 @@ export function Header() {
         setCartCount(cartSummary?.items?.length || 0)
 
         const wishlistItems = await userApi.getWishlist()
-        setWishlistCount(wishlistItems?.length || 0)
+        setWishlistCount(wishlistItems?.items?.length || 0)
       } catch (error) {
         console.error("Failed to fetch cart or wishlist count:", error)
       }

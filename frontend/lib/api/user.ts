@@ -33,16 +33,13 @@ export const userApi = {
     await axios.put(`/users/address/default/${addressId}`)
   },
 
-  getWishlist: async (): Promise<any[]> => {
-    const res = await axios.get("/users/wishlist")
-    const { product_ids } = res.data
-    const validIds = product_ids.filter((id: string) => id)
-    const productPromises = validIds.map((id: string) =>
-      axios.get(`/products/${id}`).then((res) => res.data)
-    )
-    return Promise.all(productPromises)
-  },
+  getWishlist: async (): Promise<{ items: any[] }> => {
+  const res = await axios.get("/users/wishlist")
+  console.log("Wishlist response:", res.data) // 👈 add this to confirm structure
+  return res.data // expects res.data = { items: [...] }
+},
 
+  
   addToWishlist: async (productId: string): Promise<any> => {
     const res = await axios.post("/users/wishlist", { product_id: productId })
     return res.data

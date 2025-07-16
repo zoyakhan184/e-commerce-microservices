@@ -68,6 +68,7 @@ func SetupRouter() *gin.Engine {
 		api.GET("/cart", handlers.GetCart)
 		api.PUT("/cart", handlers.UpdateCartItem)
 		api.DELETE("/cart", handlers.RemoveFromCart)
+		api.DELETE("/cart/clear", handlers.ClearCart)
 	}
 
 	// Orders

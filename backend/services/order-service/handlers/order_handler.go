@@ -17,12 +17,38 @@ type OrderService struct {
 }
 
 func (s *OrderService) PlaceOrder(ctx context.Context, req *orderpb.PlaceOrderRequest) (*orderpb.PlaceOrderResponse, error) {
+	orderID := uuid.New().String()
+
+	var totalAmount float64
+	var orderItems []models.OrderItem
+
+	for _, item := range req.Items {
+		itemID := uuid.New().String()
+
+		// Dummy price; replace with actual product lookup or input later
+		price := 100.0
+
+		totalAmount += price * float64(item.Quantity)
+
+		orderItems = append(orderItems, models.OrderItem{
+			ID:        itemID,
+			OrderID:   orderID,
+			ProductID: item.ProductId,
+			Quantity:  int(item.Quantity),
+			Price:     price,
+			// Set size, color if needed
+			Size:  "",
+			Color: "",
+		})
+	}
+
 	order := models.Order{
-		ID:            uuid.New().String(),
+		ID:            orderID,
 		UserID:        req.UserId,
 		OrderStatus:   "pending",
 		PaymentStatus: "unpaid",
-		TotalAmount:   0, // Replace after integrating cart service
+		TotalAmount:   totalAmount,
+		OrderItems:    orderItems,
 	}
 
 	err := s.Repo.CreateOrder(&order)
