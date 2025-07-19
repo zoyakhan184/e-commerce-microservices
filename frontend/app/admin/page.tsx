@@ -5,7 +5,14 @@ import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import { AdminLayout } from "@/components/admin/admin-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, ShoppingBag, DollarSign, Package, TrendingUp, AlertTriangle } from "lucide-react"
+import {
+  Users,
+  ShoppingBag,
+  DollarSign,
+  Package,
+  TrendingUp,
+  AlertTriangle,
+} from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { adminApi } from "@/lib/api/admin"
 import type { ActivityItem } from "@/types"
@@ -61,7 +68,7 @@ export default function AdminDashboard() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Dashboard Overview</h1>
-          <p className="text-muted-foreground">Welcome back, {user.name}!</p>
+          <p className="text-muted-foreground">Welcome back, {user.full_name}!</p>
         </div>
 
         {/* Stats Cards */}
@@ -164,7 +171,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          {/* Low Stock Details */}
+          {/* Low Stock Details (no SKU) */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -176,12 +183,11 @@ export default function AdminDashboard() {
               <div className="space-y-4">
                 {low_stock_items.map((item) => (
                   <div
-                    key={item.sku_id}
+                    key={item.product_id}
                     className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800"
                   >
                     <div>
-                      <p className="font-medium">SKU: {item.sku_id}</p>
-                      <p className="text-sm text-muted-foreground">Product ID: {item.product_id}</p>
+                      <p className="font-medium">Product ID: {item.product_id}</p>
                     </div>
                     <span className="text-sm font-medium text-orange-600 dark:text-orange-400">
                       {item.quantity} left

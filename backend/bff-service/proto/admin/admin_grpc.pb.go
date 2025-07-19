@@ -23,6 +23,7 @@ const (
 	AdminService_ListAllUsers_FullMethodName      = "/admin.AdminService/ListAllUsers"
 	AdminService_ViewAllOrders_FullMethodName     = "/admin.AdminService/ViewAllOrders"
 	AdminService_GetRecentActivity_FullMethodName = "/admin.AdminService/GetRecentActivity"
+	AdminService_DeleteUser_FullMethodName        = "/admin.AdminService/DeleteUser"
 )
 
 // AdminServiceClient is the client API for AdminService service.
@@ -35,6 +36,7 @@ type AdminServiceClient interface {
 	ListAllUsers(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListUsersResponse, error)
 	ViewAllOrders(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ListOrdersResponse, error)
 	GetRecentActivity(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*RecentActivityResponse, error)
+	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
 }
 
 type adminServiceClient struct {
@@ -85,6 +87,16 @@ func (c *adminServiceClient) GetRecentActivity(ctx context.Context, in *Empty, o
 	return out, nil
 }
 
+func (c *adminServiceClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteUserResponse)
+	err := c.cc.Invoke(ctx, AdminService_DeleteUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServiceServer is the server API for AdminService service.
 // All implementations must embed UnimplementedAdminServiceServer
 // for forward compatibility.
@@ -95,6 +107,7 @@ type AdminServiceServer interface {
 	ListAllUsers(context.Context, *Empty) (*ListUsersResponse, error)
 	ViewAllOrders(context.Context, *Empty) (*ListOrdersResponse, error)
 	GetRecentActivity(context.Context, *Empty) (*RecentActivityResponse, error)
+	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
 	mustEmbedUnimplementedAdminServiceServer()
 }
 
@@ -116,6 +129,9 @@ func (UnimplementedAdminServiceServer) ViewAllOrders(context.Context, *Empty) (*
 }
 func (UnimplementedAdminServiceServer) GetRecentActivity(context.Context, *Empty) (*RecentActivityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecentActivity not implemented")
+}
+func (UnimplementedAdminServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
 func (UnimplementedAdminServiceServer) mustEmbedUnimplementedAdminServiceServer() {}
 func (UnimplementedAdminServiceServer) testEmbeddedByValue()                      {}
@@ -210,6 +226,24 @@ func _AdminService_GetRecentActivity_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AdminService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).DeleteUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_DeleteUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).DeleteUser(ctx, req.(*DeleteUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AdminService_ServiceDesc is the grpc.ServiceDesc for AdminService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -232,6 +266,10 @@ var AdminService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRecentActivity",
 			Handler:    _AdminService_GetRecentActivity_Handler,
+		},
+		{
+			MethodName: "DeleteUser",
+			Handler:    _AdminService_DeleteUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

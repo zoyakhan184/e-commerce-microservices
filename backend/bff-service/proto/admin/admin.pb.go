@@ -127,7 +127,6 @@ func (x *DashboardData) GetLowStockItems() []*LowStockItem {
 
 type LowStockItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	SkuId         string                 `protobuf:"bytes,1,opt,name=sku_id,json=skuId,proto3" json:"sku_id,omitempty"`
 	ProductId     string                 `protobuf:"bytes,2,opt,name=product_id,json=productId,proto3" json:"product_id,omitempty"`
 	Quantity      int32                  `protobuf:"varint,3,opt,name=quantity,proto3" json:"quantity,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -162,13 +161,6 @@ func (x *LowStockItem) ProtoReflect() protoreflect.Message {
 // Deprecated: Use LowStockItem.ProtoReflect.Descriptor instead.
 func (*LowStockItem) Descriptor() ([]byte, []int) {
 	return file_proto_admin_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *LowStockItem) GetSkuId() string {
-	if x != nil {
-		return x.SkuId
-	}
-	return ""
 }
 
 func (x *LowStockItem) GetProductId() string {
@@ -545,6 +537,94 @@ func (x *RecentActivityResponse) GetActivities() []*ActivityItem {
 	return nil
 }
 
+type DeleteUserRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteUserRequest) Reset() {
+	*x = DeleteUserRequest{}
+	mi := &file_proto_admin_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteUserRequest) ProtoMessage() {}
+
+func (x *DeleteUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteUserRequest.ProtoReflect.Descriptor instead.
+func (*DeleteUserRequest) Descriptor() ([]byte, []int) {
+	return file_proto_admin_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *DeleteUserRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+type DeleteUserResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteUserResponse) Reset() {
+	*x = DeleteUserResponse{}
+	mi := &file_proto_admin_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteUserResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteUserResponse) ProtoMessage() {}
+
+func (x *DeleteUserResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_admin_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteUserResponse.ProtoReflect.Descriptor instead.
+func (*DeleteUserResponse) Descriptor() ([]byte, []int) {
+	return file_proto_admin_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *DeleteUserResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_proto_admin_proto protoreflect.FileDescriptor
 
 const file_proto_admin_proto_rawDesc = "" +
@@ -556,9 +636,8 @@ const file_proto_admin_proto_rawDesc = "" +
 	"totalUsers\x12!\n" +
 	"\ftotal_orders\x18\x02 \x01(\x05R\vtotalOrders\x12#\n" +
 	"\rtotal_revenue\x18\x03 \x01(\x01R\ftotalRevenue\x12;\n" +
-	"\x0flow_stock_items\x18\x04 \x03(\v2\x13.admin.LowStockItemR\rlowStockItems\"`\n" +
-	"\fLowStockItem\x12\x15\n" +
-	"\x06sku_id\x18\x01 \x01(\tR\x05skuId\x12\x1d\n" +
+	"\x0flow_stock_items\x18\x04 \x03(\v2\x13.admin.LowStockItemR\rlowStockItems\"I\n" +
+	"\fLowStockItem\x12\x1d\n" +
 	"\n" +
 	"product_id\x18\x02 \x01(\tR\tproductId\x12\x1a\n" +
 	"\bquantity\x18\x03 \x01(\x05R\bquantity\"\xa8\x01\n" +
@@ -589,12 +668,18 @@ const file_proto_admin_proto_rawDesc = "" +
 	"\x16RecentActivityResponse\x123\n" +
 	"\n" +
 	"activities\x18\x01 \x03(\v2\x13.admin.ActivityItemR\n" +
-	"activities2\xfa\x01\n" +
+	"activities\",\n" +
+	"\x11DeleteUserRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\".\n" +
+	"\x12DeleteUserResponse\x12\x18\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2\xbd\x02\n" +
 	"\fAdminService\x126\n" +
 	"\x10GetDashboardData\x12\f.admin.Empty\x1a\x14.admin.DashboardData\x126\n" +
 	"\fListAllUsers\x12\f.admin.Empty\x1a\x18.admin.ListUsersResponse\x128\n" +
 	"\rViewAllOrders\x12\f.admin.Empty\x1a\x19.admin.ListOrdersResponse\x12@\n" +
-	"\x11GetRecentActivity\x12\f.admin.Empty\x1a\x1d.admin.RecentActivityResponseB\x1dZ\x1badmin-service/proto;adminpbb\x06proto3"
+	"\x11GetRecentActivity\x12\f.admin.Empty\x1a\x1d.admin.RecentActivityResponse\x12A\n" +
+	"\n" +
+	"DeleteUser\x12\x18.admin.DeleteUserRequest\x1a\x19.admin.DeleteUserResponseB\x1dZ\x1badmin-service/proto;adminpbb\x06proto3"
 
 var (
 	file_proto_admin_proto_rawDescOnce sync.Once
@@ -608,7 +693,7 @@ func file_proto_admin_proto_rawDescGZIP() []byte {
 	return file_proto_admin_proto_rawDescData
 }
 
-var file_proto_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_proto_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_proto_admin_proto_goTypes = []any{
 	(*Empty)(nil),                  // 0: admin.Empty
 	(*DashboardData)(nil),          // 1: admin.DashboardData
@@ -619,25 +704,29 @@ var file_proto_admin_proto_goTypes = []any{
 	(*ListOrdersResponse)(nil),     // 6: admin.ListOrdersResponse
 	(*ActivityItem)(nil),           // 7: admin.ActivityItem
 	(*RecentActivityResponse)(nil), // 8: admin.RecentActivityResponse
+	(*DeleteUserRequest)(nil),      // 9: admin.DeleteUserRequest
+	(*DeleteUserResponse)(nil),     // 10: admin.DeleteUserResponse
 }
 var file_proto_admin_proto_depIdxs = []int32{
-	2, // 0: admin.DashboardData.low_stock_items:type_name -> admin.LowStockItem
-	3, // 1: admin.ListUsersResponse.users:type_name -> admin.User
-	5, // 2: admin.ListOrdersResponse.orders:type_name -> admin.Order
-	7, // 3: admin.RecentActivityResponse.activities:type_name -> admin.ActivityItem
-	0, // 4: admin.AdminService.GetDashboardData:input_type -> admin.Empty
-	0, // 5: admin.AdminService.ListAllUsers:input_type -> admin.Empty
-	0, // 6: admin.AdminService.ViewAllOrders:input_type -> admin.Empty
-	0, // 7: admin.AdminService.GetRecentActivity:input_type -> admin.Empty
-	1, // 8: admin.AdminService.GetDashboardData:output_type -> admin.DashboardData
-	4, // 9: admin.AdminService.ListAllUsers:output_type -> admin.ListUsersResponse
-	6, // 10: admin.AdminService.ViewAllOrders:output_type -> admin.ListOrdersResponse
-	8, // 11: admin.AdminService.GetRecentActivity:output_type -> admin.RecentActivityResponse
-	8, // [8:12] is the sub-list for method output_type
-	4, // [4:8] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	2,  // 0: admin.DashboardData.low_stock_items:type_name -> admin.LowStockItem
+	3,  // 1: admin.ListUsersResponse.users:type_name -> admin.User
+	5,  // 2: admin.ListOrdersResponse.orders:type_name -> admin.Order
+	7,  // 3: admin.RecentActivityResponse.activities:type_name -> admin.ActivityItem
+	0,  // 4: admin.AdminService.GetDashboardData:input_type -> admin.Empty
+	0,  // 5: admin.AdminService.ListAllUsers:input_type -> admin.Empty
+	0,  // 6: admin.AdminService.ViewAllOrders:input_type -> admin.Empty
+	0,  // 7: admin.AdminService.GetRecentActivity:input_type -> admin.Empty
+	9,  // 8: admin.AdminService.DeleteUser:input_type -> admin.DeleteUserRequest
+	1,  // 9: admin.AdminService.GetDashboardData:output_type -> admin.DashboardData
+	4,  // 10: admin.AdminService.ListAllUsers:output_type -> admin.ListUsersResponse
+	6,  // 11: admin.AdminService.ViewAllOrders:output_type -> admin.ListOrdersResponse
+	8,  // 12: admin.AdminService.GetRecentActivity:output_type -> admin.RecentActivityResponse
+	10, // 13: admin.AdminService.DeleteUser:output_type -> admin.DeleteUserResponse
+	9,  // [9:14] is the sub-list for method output_type
+	4,  // [4:9] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_proto_admin_proto_init() }
@@ -651,7 +740,7 @@ func file_proto_admin_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_admin_proto_rawDesc), len(file_proto_admin_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -8,21 +8,21 @@ export type CartItem = {
 
 export const orderApi = {
   async placeOrder(items: CartItem[]): Promise<{ orderId: string }> {
-    const res = await axios.post("/orders", { items })
+    const res = await axios.post("api/orders", { items })
     return res.data
   },
 
   async clearCart(): Promise<void> {
-    await axios.delete("/cart/clear")
+    await axios.delete("api/cart/clear")
   },
 
   async getOrders(): Promise<Order[]> {
-    const res = await axios.get("/orders")
+    const res = await axios.get("api/orders")
     return res.data
   },
 
   async getOrderDetails(orderId: string): Promise<Order> {
-    const res = await axios.get(`/orders/${orderId}`)
+    const res = await axios.get(`api/orders/${orderId}`)
     return res.data
   },
 }

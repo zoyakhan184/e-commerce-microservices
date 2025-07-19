@@ -8,7 +8,7 @@ type ProductRepository interface {
 	DeleteProduct(productID string) error
 	GetProduct(productID string) (*models.Product, error)
 	ListProducts(filter map[string]interface{}) ([]models.Product, error)
-
+	ListLowStock(threshold int) ([]models.Product, error) // ✅ New method
 	AddCategory(category *models.Category) error
 	ListCategories() ([]models.Category, error)
 }

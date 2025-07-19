@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"log"
+	"time"
 	"user-service/models"
 	userpb "user-service/proto"
 	"user-service/repository"
@@ -210,9 +211,11 @@ func (s *UserService) ListAllProfiles(ctx context.Context, _ *userpb.Empty) (*us
 			Gender:    u.Gender,
 			Dob:       u.DOB,
 			AvatarUrl: u.AvatarURL,
-			Role:      u.Role, // ✅ Add `role` to proto
+			Role:      u.Role,
+			CreatedAt: u.CreatedAt.Format(time.RFC3339), // ✅ Add this
 		})
 	}
+
 	log.Printf("Successfully fetched %d user profiles", len(protoProfiles))
 	return &userpb.ListProfilesResponse{Profiles: protoProfiles}, nil
 }

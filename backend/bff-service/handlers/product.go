@@ -14,7 +14,7 @@ import (
 func ListProducts(c *gin.Context) {
 	filter := &productpb.ProductFilter{
 		CategoryId: c.Query("category_id"),
-		Brand:       c.Query("brand"),
+		Brand:      c.Query("brand"),
 	}
 
 	resp, err := clients.ProductClient().ListProducts(c, filter)
@@ -44,6 +44,7 @@ func AddProduct(c *gin.Context) {
 		return
 	}
 	fmt.Println("Adding product with request:", &req)
+
 	resp, err := clients.ProductClient().AddProduct(c, &req)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to add product")
@@ -54,11 +55,15 @@ func AddProduct(c *gin.Context) {
 
 // Edit an existing product
 func EditProduct(c *gin.Context) {
+	id := c.Param("id")
+
 	var req productpb.ProductUpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, "Invalid input")
 		return
 	}
+
+	req.Id = id // ✅ Fix: Assign ID from URL to the update request
 
 	resp, err := clients.ProductClient().EditProduct(c, &req)
 	if err != nil {
@@ -71,12 +76,15 @@ func EditProduct(c *gin.Context) {
 // Delete a product
 func DeleteProduct(c *gin.Context) {
 	id := c.Param("id")
-	resp, err := clients.ProductClient().DeleteProduct(c, &productpb.ProductIdRequest{Id: id})
+
+	_, err := clients.ProductClient().DeleteProduct(c, &productpb.ProductIdRequest{Id: id})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to delete product")
 		return
 	}
-	utils.RespondWithJSON(c, http.StatusOK, resp)
+
+	// ✅ Respond with just status
+	c.Status(http.StatusOK)
 }
 
 // Add a category (or subcategory)
@@ -103,4 +111,18 @@ func ListCategories(c *gin.Context) {
 		return
 	}
 	utils.RespondWithJSON(c, http.StatusOK, resp.Categories)
+}
+
+// List low stock products
+func ListLowStockProducts(c *gin.Context) {
+	threshold := utils.ParseInt(c.Query("threshold"), 5) // Default to 5 if not specified
+
+	resp, err := clients.ProductClient().ListLowStockProducts(c, &productpb.LowStockRequest{
+		Threshold: int32(threshold),
+	})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to fetch low stock products")
+		return
+	}
+	utils.RespondWithJSON(c, http.StatusOK, resp.Products)
 }

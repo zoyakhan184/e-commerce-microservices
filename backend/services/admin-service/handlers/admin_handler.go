@@ -23,7 +23,6 @@ func (s *AdminService) GetDashboardData(ctx context.Context, _ *adminpb.Empty) (
 	var items []*adminpb.LowStockItem
 	for _, i := range lowStock {
 		items = append(items, &adminpb.LowStockItem{
-			SkuId:     i.SKU,
 			ProductId: i.ProductID,
 			Quantity:  int32(i.Quantity),
 		})
@@ -103,4 +102,17 @@ func (s *AdminService) GetRecentActivity(ctx context.Context, _ *adminpb.Empty) 
 	}
 
 	return &adminpb.RecentActivityResponse{Activities: res}, nil
+}
+
+func (s *AdminService) DeleteUser(ctx context.Context, req *adminpb.DeleteUserRequest) (*adminpb.DeleteUserResponse, error) {
+	userID := req.GetUserId()
+
+	// Step 1: Delete from local DB (auth DB)
+	err := s.Repo.DeleteUser(userID)
+	if err != nil {
+		return nil, err
+	}
+	return &adminpb.DeleteUserResponse{
+		Message: "User deleted successfully",
+	}, nil
 }

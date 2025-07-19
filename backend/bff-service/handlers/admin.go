@@ -44,3 +44,18 @@ func GetRecentActivity(c *gin.Context) {
 	}
 	utils.RespondWithJSON(c, http.StatusOK, resp.Activities)
 }
+
+func DeleteUser(c *gin.Context) {
+	userID := c.Param("userId")
+
+	_, err := clients.AdminClient().DeleteUser(c, &adminpb.DeleteUserRequest{
+		UserId: userID,
+	})
+
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "Failed to delete user")
+		return
+	}
+
+	utils.RespondWithJSON(c, http.StatusOK, gin.H{"message": "User deleted successfully"})
+}

@@ -32,6 +32,12 @@ func (r *PostgresUserRepo) GetUserByEmail(email string) (*models.User, error) {
 	return &user, err
 }
 
-func (r *PostgresUserRepo) UpdatePassword(userID, newHash string) error {
+func (r *PostgresUserRepo) UpdateUserPassword(userID, newHash string) error {
 	return r.DB.Model(&models.User{}).Where("id = ?", userID).Update("password", newHash).Error
+}
+
+func (r *PostgresUserRepo) GetUserByID(userID string) (*models.User, error) {
+	var user models.User
+	err := r.DB.Where("id = ?", userID).First(&user).Error
+	return &user, err
 }

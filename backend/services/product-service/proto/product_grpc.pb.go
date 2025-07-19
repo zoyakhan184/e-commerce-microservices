@@ -19,13 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ProductService_AddProduct_FullMethodName     = "/product.ProductService/AddProduct"
-	ProductService_EditProduct_FullMethodName    = "/product.ProductService/EditProduct"
-	ProductService_DeleteProduct_FullMethodName  = "/product.ProductService/DeleteProduct"
-	ProductService_GetProduct_FullMethodName     = "/product.ProductService/GetProduct"
-	ProductService_ListProducts_FullMethodName   = "/product.ProductService/ListProducts"
-	ProductService_AddCategory_FullMethodName    = "/product.ProductService/AddCategory"
-	ProductService_ListCategories_FullMethodName = "/product.ProductService/ListCategories"
+	ProductService_AddProduct_FullMethodName           = "/product.ProductService/AddProduct"
+	ProductService_EditProduct_FullMethodName          = "/product.ProductService/EditProduct"
+	ProductService_DeleteProduct_FullMethodName        = "/product.ProductService/DeleteProduct"
+	ProductService_GetProduct_FullMethodName           = "/product.ProductService/GetProduct"
+	ProductService_ListProducts_FullMethodName         = "/product.ProductService/ListProducts"
+	ProductService_ListLowStockProducts_FullMethodName = "/product.ProductService/ListLowStockProducts"
+	ProductService_AddCategory_FullMethodName          = "/product.ProductService/AddCategory"
+	ProductService_ListCategories_FullMethodName       = "/product.ProductService/ListCategories"
 )
 
 // ProductServiceClient is the client API for ProductService service.
@@ -37,6 +38,7 @@ type ProductServiceClient interface {
 	DeleteProduct(ctx context.Context, in *ProductIdRequest, opts ...grpc.CallOption) (*GenericResponse, error)
 	GetProduct(ctx context.Context, in *ProductIdRequest, opts ...grpc.CallOption) (*ProductResponse, error)
 	ListProducts(ctx context.Context, in *ProductFilter, opts ...grpc.CallOption) (*ProductList, error)
+	ListLowStockProducts(ctx context.Context, in *LowStockRequest, opts ...grpc.CallOption) (*ProductList, error)
 	AddCategory(ctx context.Context, in *CategoryRequest, opts ...grpc.CallOption) (*GenericResponse, error)
 	ListCategories(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*CategoryList, error)
 }
@@ -99,6 +101,16 @@ func (c *productServiceClient) ListProducts(ctx context.Context, in *ProductFilt
 	return out, nil
 }
 
+func (c *productServiceClient) ListLowStockProducts(ctx context.Context, in *LowStockRequest, opts ...grpc.CallOption) (*ProductList, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ProductList)
+	err := c.cc.Invoke(ctx, ProductService_ListLowStockProducts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *productServiceClient) AddCategory(ctx context.Context, in *CategoryRequest, opts ...grpc.CallOption) (*GenericResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GenericResponse)
@@ -128,6 +140,7 @@ type ProductServiceServer interface {
 	DeleteProduct(context.Context, *ProductIdRequest) (*GenericResponse, error)
 	GetProduct(context.Context, *ProductIdRequest) (*ProductResponse, error)
 	ListProducts(context.Context, *ProductFilter) (*ProductList, error)
+	ListLowStockProducts(context.Context, *LowStockRequest) (*ProductList, error)
 	AddCategory(context.Context, *CategoryRequest) (*GenericResponse, error)
 	ListCategories(context.Context, *Empty) (*CategoryList, error)
 	mustEmbedUnimplementedProductServiceServer()
@@ -154,6 +167,9 @@ func (UnimplementedProductServiceServer) GetProduct(context.Context, *ProductIdR
 }
 func (UnimplementedProductServiceServer) ListProducts(context.Context, *ProductFilter) (*ProductList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListProducts not implemented")
+}
+func (UnimplementedProductServiceServer) ListLowStockProducts(context.Context, *LowStockRequest) (*ProductList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListLowStockProducts not implemented")
 }
 func (UnimplementedProductServiceServer) AddCategory(context.Context, *CategoryRequest) (*GenericResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddCategory not implemented")
@@ -272,6 +288,24 @@ func _ProductService_ListProducts_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_ListLowStockProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LowStockRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).ListLowStockProducts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProductService_ListLowStockProducts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).ListLowStockProducts(ctx, req.(*LowStockRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ProductService_AddCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CategoryRequest)
 	if err := dec(in); err != nil {
@@ -334,6 +368,10 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListProducts",
 			Handler:    _ProductService_ListProducts_Handler,
+		},
+		{
+			MethodName: "ListLowStockProducts",
+			Handler:    _ProductService_ListLowStockProducts_Handler,
 		},
 		{
 			MethodName: "AddCategory",

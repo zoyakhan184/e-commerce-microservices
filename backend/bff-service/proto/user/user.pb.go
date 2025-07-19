@@ -118,7 +118,8 @@ type UserProfile struct {
 	Gender        string                 `protobuf:"bytes,5,opt,name=gender,proto3" json:"gender,omitempty"`
 	Dob           string                 `protobuf:"bytes,6,opt,name=dob,proto3" json:"dob,omitempty"`
 	AvatarUrl     string                 `protobuf:"bytes,7,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
-	Role          string                 `protobuf:"bytes,8,opt,name=role,proto3" json:"role,omitempty"` // ✅ Add this
+	Role          string                 `protobuf:"bytes,8,opt,name=role,proto3" json:"role,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"` // ✅ Add this
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -205,6 +206,13 @@ func (x *UserProfile) GetAvatarUrl() string {
 func (x *UserProfile) GetRole() string {
 	if x != nil {
 		return x.Role
+	}
+	return ""
+}
+
+func (x *UserProfile) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
 	}
 	return ""
 }
@@ -797,7 +805,7 @@ const file_proto_user_proto_rawDesc = "" +
 	"\x0eGetUserRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"&\n" +
 	"\vUserRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\"\xcc\x01\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"\xeb\x01\n" +
 	"\vUserProfile\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\tfull_name\x18\x02 \x01(\tR\bfullName\x12\x14\n" +
@@ -807,7 +815,9 @@ const file_proto_user_proto_rawDesc = "" +
 	"\x03dob\x18\x06 \x01(\tR\x03dob\x12\x1d\n" +
 	"\n" +
 	"avatar_url\x18\a \x01(\tR\tavatarUrl\x12\x12\n" +
-	"\x04role\x18\b \x01(\tR\x04role\"\xa8\x01\n" +
+	"\x04role\x18\b \x01(\tR\x04role\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\t \x01(\tR\tcreatedAt\"\xa8\x01\n" +
 	"\x11UpdateUserRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1b\n" +
 	"\tfull_name\x18\x02 \x01(\tR\bfullName\x12\x14\n" +

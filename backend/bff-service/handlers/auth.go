@@ -4,6 +4,7 @@ import (
 	"bff-service/clients"
 	authpb "bff-service/proto/auth"
 	"bff-service/utils"
+	"log"
 	"net/http"
 	"strings"
 
@@ -97,5 +98,45 @@ func ValidateToken(c *gin.Context) {
 		return
 	}
 
+	utils.RespondWithJSON(c, http.StatusOK, resp)
+}
+
+func ChangePassword(c *gin.Context) {
+	var jsonReq struct {
+		CurrentPassword string `json:"currentPassword"`
+		NewPassword     string `json:"newPassword"`
+	}
+	if err := c.ShouldBindJSON(&jsonReq); err != nil {
+		log.Println("[ChangePassword] ❌ Invalid request:", err)
+		utils.RespondWithError(c, http.StatusBadRequest, "Invalid request")
+		return
+	}
+
+	userID, exists := c.Get("user_id")
+	if !exists {
+		log.Println("[ChangePassword] ❌ Unauthorized: user_id missing")
+		utils.RespondWithError(c, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	log.Printf("[ChangePassword] 🔐 Password change requested for user: %s", userID)
+	log.Printf("[ChangePassword] Current password length: %d", len(jsonReq.CurrentPassword))
+	log.Printf("[ChangePassword] New password length: %d", len(jsonReq.NewPassword))
+
+	// Construct gRPC request
+	req := &authpb.ChangePasswordRequest{
+		UserId:          userID.(string),
+		CurrentPassword: jsonReq.CurrentPassword,
+		NewPassword:     jsonReq.NewPassword,
+	}
+
+	resp, err := clients.AuthClient().ChangePassword(c, req)
+	if err != nil {
+		log.Printf("[ChangePassword] ❌ Error from auth-service: %v", err)
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	log.Printf("[ChangePassword] ✅ Password changed successfully for user: %s", req.UserId)
 	utils.RespondWithJSON(c, http.StatusOK, resp)
 }

@@ -1,13 +1,16 @@
 export interface User {
-  id: string
-  name: string
+  user_id: string
+  full_name: string
   email: string
   role: "user" | "admin"
   phone?: string
   gender?: string
   dob?: string
   avatar_url?: string
+  created_at?: string
 }
+
+
 
 export interface Product {
   id: string
@@ -17,10 +20,12 @@ export interface Product {
   originalPrice?: number
   brand: string
   category_id?: string
-  image_urls?: string[] // For compatibility with existing code
+  image_urls?: string[]
   sizes?: string[]
   colors?: string[]
+  quantity: number // ✅ Add this
 }
+
 
 export interface Category {
   id: string
@@ -84,7 +89,6 @@ export interface AdminDashboard {
   total_orders: number
   total_revenue: number
   low_stock_items: {
-    sku_id: string
     product_id: string
     quantity: number
   }[]

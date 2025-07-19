@@ -8,12 +8,15 @@ import (
 	"order-service/repository"
 	"order-service/utils"
 
+	productpb "product-service/proto"
+
 	"github.com/google/uuid"
 )
 
 type OrderService struct {
 	orderpb.UnimplementedOrderServiceServer
-	Repo *repository.OrderRepo
+	Repo          *repository.OrderRepo
+	ProductClient productpb.ProductServiceClient
 }
 
 func (s *OrderService) PlaceOrder(ctx context.Context, req *orderpb.PlaceOrderRequest) (*orderpb.PlaceOrderResponse, error) {
@@ -25,20 +28,25 @@ func (s *OrderService) PlaceOrder(ctx context.Context, req *orderpb.PlaceOrderRe
 	for _, item := range req.Items {
 		itemID := uuid.New().String()
 
-		// Dummy price; replace with actual product lookup or input later
-		price := 100.0
+		// Fix: Use ProductIdRequest instead of GetProductRequest
+		productResp, err := s.ProductClient.GetProduct(ctx, &productpb.ProductIdRequest{Id: item.ProductId})
+		if err != nil {
+			return nil, err
+		}
 
-		totalAmount += price * float64(item.Quantity)
+		itemTotal := productResp.Price * float64(item.Quantity)
+		totalAmount += itemTotal
 
 		orderItems = append(orderItems, models.OrderItem{
-			ID:        itemID,
-			OrderID:   orderID,
-			ProductID: item.ProductId,
-			Quantity:  int(item.Quantity),
-			Price:     price,
-			// Set size, color if needed
-			Size:  "",
-			Color: "",
+			ID:          itemID,
+			OrderID:     orderID,
+			ProductID:   item.ProductId,
+			ProductName: productResp.Name,
+			Quantity:    int(item.Quantity),
+			Price:       productResp.Price,
+			// Remove Size and Color fields since they don't exist in ProductResponse
+			// Size:        productResp.Size,
+			// Color:       productResp.Color,
 		})
 	}
 
@@ -66,6 +74,18 @@ func (s *OrderService) GetOrders(ctx context.Context, req *orderpb.GetOrdersRequ
 	orders, _ := s.Repo.GetOrdersByUser(req.UserId)
 	var res []*orderpb.Order
 	for _, o := range orders {
+		var items []*orderpb.OrderItem
+		for _, i := range o.OrderItems {
+			items = append(items, &orderpb.OrderItem{
+				ProductId:   i.ProductID,
+				ProductName: i.ProductName,
+				Quantity:    int32(i.Quantity),
+				Price:       i.Price,
+				// Remove Size and Color if they don't exist in your proto
+				// Size:        i.Size,
+				// Color:       i.Color,
+			})
+		}
 		res = append(res, &orderpb.Order{
 			Id:            o.ID,
 			UserId:        o.UserID,
@@ -73,6 +93,7 @@ func (s *OrderService) GetOrders(ctx context.Context, req *orderpb.GetOrdersRequ
 			PaymentStatus: o.PaymentStatus,
 			TotalAmount:   o.TotalAmount,
 			CreatedAt:     o.CreatedAt.String(),
+			Items:         items,
 		})
 	}
 	return &orderpb.GetOrdersResponse{Orders: res}, nil
@@ -80,6 +101,17 @@ func (s *OrderService) GetOrders(ctx context.Context, req *orderpb.GetOrdersRequ
 
 func (s *OrderService) GetOrderDetails(ctx context.Context, req *orderpb.GetOrderDetailsRequest) (*orderpb.GetOrderDetailsResponse, error) {
 	o, _ := s.Repo.GetOrderByID(req.OrderId)
+	var items []*orderpb.OrderItem
+	for _, i := range o.OrderItems {
+		items = append(items, &orderpb.OrderItem{
+			ProductId:   i.ProductID,
+			ProductName: i.ProductName,
+			Quantity:    int32(i.Quantity),
+			Price:       i.Price,
+			Size:        i.Size,
+			Color:       i.Color,
+		})
+	}
 	return &orderpb.GetOrderDetailsResponse{
 		Order: &orderpb.Order{
 			Id:            o.ID,
@@ -88,6 +120,7 @@ func (s *OrderService) GetOrderDetails(ctx context.Context, req *orderpb.GetOrde
 			PaymentStatus: o.PaymentStatus,
 			TotalAmount:   o.TotalAmount,
 			CreatedAt:     o.CreatedAt.String(),
+			Items:         items,
 		},
 	}, nil
 }
@@ -114,6 +147,17 @@ func (s *OrderService) ListAllOrders(ctx context.Context, _ *orderpb.ListAllOrde
 	orders, _ := s.Repo.GetAllOrders()
 	var res []*orderpb.Order
 	for _, o := range orders {
+		var items []*orderpb.OrderItem
+		for _, i := range o.OrderItems {
+			items = append(items, &orderpb.OrderItem{
+				ProductId:   i.ProductID,
+				ProductName: i.ProductName,
+				Quantity:    int32(i.Quantity),
+				Price:       i.Price,
+				Size:        i.Size,
+				Color:       i.Color,
+			})
+		}
 		res = append(res, &orderpb.Order{
 			Id:            o.ID,
 			UserId:        o.UserID,
@@ -121,6 +165,7 @@ func (s *OrderService) ListAllOrders(ctx context.Context, _ *orderpb.ListAllOrde
 			PaymentStatus: o.PaymentStatus,
 			TotalAmount:   o.TotalAmount,
 			CreatedAt:     o.CreatedAt.String(),
+			Items:         items,
 		})
 	}
 	return &orderpb.ListAllOrdersResponse{Orders: res}, nil

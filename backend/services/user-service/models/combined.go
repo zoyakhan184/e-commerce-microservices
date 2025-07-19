@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type UserWithProfile struct {
 	UserID    string
 	Name      string
@@ -10,4 +12,5 @@ type UserWithProfile struct {
 	Gender    string
 	DOB       string
 	AvatarURL string
+	CreatedAt time.Time // ✅ Add this field
 }

@@ -7,7 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +25,7 @@ import {
 import { Search, MoreHorizontal, Eye, Edit, Trash2, Filter } from "lucide-react"
 import { adminApi } from "@/lib/api/admin"
 import { useToast } from "@/hooks/use-toast"
+import type { User } from "@/types"
 
 export default function AdminUsersPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -28,24 +36,22 @@ export default function AdminUsersPage() {
     data: users,
     isLoading,
     refetch,
-  } = useQuery({
+  } = useQuery<User[]>({
     queryKey: ["admin-users"],
     queryFn: adminApi.getUsers,
   })
 
-  const {
-    data: dashboardData,
-  } = useQuery({
+  const { data: dashboardData } = useQuery({
     queryKey: ["admin-dashboard"],
     queryFn: adminApi.getDashboard,
   })
 
   const totalUsers = dashboardData?.total_users ?? 0
-  const totalAdminUsers = users?.filter((u) => u.role === "admin").length ?? 1
-  console.log("users", users)
+  const totalAdminUsers = users?.filter((u) => u.role === "admin").length ?? 0
+
   const filteredUsers =
     users?.filter((user) => {
-      const name = user.name || ""
+      const name = user.full_name || ""
       const email = user.email || ""
       const matchesSearch =
         name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -73,7 +79,11 @@ export default function AdminUsersPage() {
     }
   }
 
-  const handleToggleUserStatus = async (userId: string, userName: string, currentStatus: string) => {
+  const handleToggleUserStatus = async (
+    userId: string,
+    userName: string,
+    currentStatus: string
+  ) => {
     const newStatus = currentStatus === "active" ? "suspended" : "active"
     try {
       await adminApi.updateUserStatus(userId, newStatus)
@@ -94,7 +104,6 @@ export default function AdminUsersPage() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Users Management</h1>
@@ -104,13 +113,13 @@ export default function AdminUsersPage() {
           </div>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Users</p>
+                  <p className="text-sm text-muted-foreground">Total Users</p>
                   <p className="text-2xl font-bold">{totalUsers}</p>
                 </div>
                 <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -124,9 +133,9 @@ export default function AdminUsersPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Active Users</p>
+                  <p className="text-sm text-muted-foreground">Active Users</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {users?.filter((u) => u.role === "user").length || 0}
+                    {users?.filter((u) => u.role === "user").length ?? 0}
                   </p>
                 </div>
                 <div className="h-8 w-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -140,7 +149,7 @@ export default function AdminUsersPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Admin Users</p>
+                  <p className="text-sm text-muted-foreground">Admin Users</p>
                   <p className="text-2xl font-bold text-purple-600">{totalAdminUsers}</p>
                 </div>
                 <div className="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">
@@ -151,7 +160,7 @@ export default function AdminUsersPage() {
           </Card>
         </div>
 
-        {/* Filters and Search */}
+        {/* Filters & Table */}
         <Card>
           <CardHeader>
             <CardTitle>All Users</CardTitle>
@@ -183,28 +192,24 @@ export default function AdminUsersPage() {
                         filterRole === role ? "font-semibold text-primary cursor-default" : ""
                       }
                     >
-                      {role === "all"
-                        ? "All Users"
-                        : role === "user"
-                        ? "Regular Users"
-                        : "Admin Users"}
+                      {role === "all" ? "All Users" : role === "user" ? "Regular Users" : "Admin Users"}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-
             </div>
 
-            {/* Users Table */}
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>User ID</TableHead>
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Role</TableHead>
                     <TableHead>Phone</TableHead>
-                    <TableHead>Join Date</TableHead>
+                    <TableHead>DOB</TableHead>
+                    {/* Removed: <TableHead>Joined</TableHead> */}
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -212,19 +217,19 @@ export default function AdminUsersPage() {
                 <TableBody>
                   {filteredUsers.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                         No users found matching your criteria.
                       </TableCell>
                     </TableRow>
                   ) : (
                     filteredUsers.map((user) => (
-                      <TableRow key={user.id}>
+                      <TableRow key={user.user_id}>
                         <TableCell>
-                          <div>
-                            <p className="font-medium">{user.name}</p>
-                            <p className="text-sm text-muted-foreground">ID: {user.id}</p>
-                          </div>
+                          <span className="text-xs font-mono text-muted-foreground block max-w-[140px] truncate">
+                            {user.user_id}
+                          </span>
                         </TableCell>
+                        <TableCell>{user.full_name || "N/A"}</TableCell>
                         <TableCell>{user.email}</TableCell>
                         <TableCell>
                           <Badge
@@ -234,8 +239,19 @@ export default function AdminUsersPage() {
                             {user.role}
                           </Badge>
                         </TableCell>
-                        <TableCell>{user.phone || "Not provided"}</TableCell>
-                        <TableCell>{user.dob ? new Date(user.dob).toLocaleDateString() : "Not provided"}</TableCell>
+                        <TableCell>
+                          {user.phone || <span className="text-muted-foreground">Not provided</span>}
+                        </TableCell>
+                        <TableCell>
+                          {user.dob
+                            ? new Date(user.dob).toLocaleDateString("en-IN", {
+                                year: "numeric",
+                                month: "short",
+                                day: "2-digit",
+                              })
+                            : <span className="text-muted-foreground">Not provided</span>}
+                        </TableCell>
+                        {/* Removed Joined Date column */}
                         <TableCell>
                           <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                             Active
@@ -249,21 +265,16 @@ export default function AdminUsersPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem>
-                                <Eye className="h-4 w-4 mr-2" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Edit className="h-4 w-4 mr-2" />
-                                Edit User
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => handleToggleUserStatus(user.id, user.name, "active")}>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleToggleUserStatus(user.user_id, user.full_name, "active")
+                                }
+                              >
                                 Suspend User
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 className="text-red-600"
-                                onClick={() => handleDeleteUser(user.id, user.name)}
+                                onClick={() => handleDeleteUser(user.user_id, user.full_name)}
                               >
                                 <Trash2 className="h-4 w-4 mr-2" />
                                 Delete User
@@ -276,6 +287,7 @@ export default function AdminUsersPage() {
                   )}
                 </TableBody>
               </Table>
+
             </div>
           </CardContent>
         </Card>

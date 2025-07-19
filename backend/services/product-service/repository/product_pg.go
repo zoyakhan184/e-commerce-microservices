@@ -34,7 +34,21 @@ func (r *PostgresProductRepo) UpdateProduct(product *models.Product) error {
 }
 
 func (r *PostgresProductRepo) DeleteProduct(productID string) error {
-	return r.DB.Delete(&models.Product{}, "id = ?", productID).Error
+	fmt.Printf("⛏️ Attempting to delete product ID: %s\n", productID)
+
+	result := r.DB.Delete(&models.Product{}, "id = ?", productID)
+	if result.Error != nil {
+		fmt.Printf("❌ DB delete error: %v\n", result.Error)
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		fmt.Println("⚠️ No rows affected — product may not exist")
+		return fmt.Errorf("product not found")
+	}
+
+	fmt.Printf("✅ Deleted %d row(s)\n", result.RowsAffected)
+	return nil
 }
 
 func (r *PostgresProductRepo) GetProduct(productID string) (*models.Product, error) {
@@ -109,4 +123,10 @@ func (r *PostgresProductRepo) ListCategories() ([]models.Category, error) {
 	var categories []models.Category
 	err := r.DB.Find(&categories).Error
 	return categories, err
+}
+
+func (r *PostgresProductRepo) ListLowStock(threshold int) ([]models.Product, error) {
+	var products []models.Product
+	err := r.DB.Preload("Images").Where("quantity < ?", threshold).Find(&products).Error
+	return products, err
 }

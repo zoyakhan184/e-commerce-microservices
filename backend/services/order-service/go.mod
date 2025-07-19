@@ -10,6 +10,7 @@ require (
 	google.golang.org/protobuf v1.36.6
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.30.0
+	product-service v0.0.0
 )
 
 require (
@@ -26,3 +27,5 @@ require (
 	golang.org/x/text v0.23.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250324211829-b45e905df463 // indirect
 )
+
+replace product-service => ../product-service

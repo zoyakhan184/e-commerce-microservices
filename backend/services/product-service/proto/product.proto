@@ -10,7 +10,7 @@ service ProductService {
   rpc DeleteProduct(ProductIdRequest) returns (GenericResponse);
   rpc GetProduct(ProductIdRequest) returns (ProductResponse);
   rpc ListProducts(ProductFilter) returns (ProductList);
-
+  rpc ListLowStockProducts(LowStockRequest) returns (ProductList);
   rpc AddCategory(CategoryRequest) returns (GenericResponse);
   rpc ListCategories(Empty) returns (CategoryList);
 }
@@ -24,6 +24,9 @@ message ProductRequest {
   double price = 4;
   string brand = 5;
   repeated string image_urls = 6;
+  int32 quantity = 7;
+  string size = 8;    // Added size field
+  string color = 9;   // Added color field
 }
 
 message ProductUpdateRequest {
@@ -33,6 +36,9 @@ message ProductUpdateRequest {
   string category_id = 4;
   double price = 5;
   string brand = 6;
+  int32 quantity = 7;
+  string size = 8;    // Added size field
+  string color = 9;   // Added color field
 }
 
 message ProductIdRequest {
@@ -47,6 +53,9 @@ message ProductResponse {
   double price = 5;
   string brand = 6;
   repeated string image_urls = 7;
+  int32 quantity = 8;
+  string size = 9;    // Added size field
+  string color = 10;  // Added color field
 }
 
 message ProductList {
@@ -56,6 +65,10 @@ message ProductList {
 message ProductFilter {
   string category_id = 1;
   string brand = 2;
+}
+
+message LowStockRequest {
+  int32 threshold = 1;
 }
 
 // =================== Category Messages ===================

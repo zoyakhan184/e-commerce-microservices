@@ -9,6 +9,7 @@ service AuthService {
   rpc ForgotPassword(ForgotPasswordRequest) returns (GenericResponse);
   rpc ResetPassword(ResetPasswordRequest) returns (GenericResponse);
   rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
 
 }
 
@@ -50,4 +51,14 @@ message ValidateTokenRequest {
 message ValidateTokenResponse {
   string user_id = 1;
   string role = 2;
+}
+
+message ChangePasswordRequest {
+  string user_id = 1;
+  string current_password = 2;
+  string new_password = 3;
+}
+
+message ChangePasswordResponse {
+  string message = 1;
 }

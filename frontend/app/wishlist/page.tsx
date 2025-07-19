@@ -5,11 +5,14 @@ import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Heart, X } from "lucide-react"
+import { HeartOff, ShoppingCart } from "lucide-react"
 import Link from "next/link"
 import { userApi } from "@/lib/api/user"
+import { cartApi } from "@/lib/api/cart"
+import { productsApi } from "@/lib/api/products"
 import Image from "next/image"
-import AuthGuard from "@/components/auth/auth-guard" // ✅ import the guard
+import AuthGuard from "@/components/auth/auth-guard"
+import { toast } from "sonner"
 
 type WishlistItem = {
   product_id: string
@@ -23,18 +26,47 @@ export default function WishlistPage() {
   const [wishlistProducts, setWishlistProducts] = useState<WishlistItem[]>([])
   const [loading, setLoading] = useState(true)
   const [removing, setRemoving] = useState<string | null>(null)
+  const [addingToCart, setAddingToCart] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
         const res = await userApi.getWishlist()
-        console.log("Fetched Wishlist Products:", res)
-        if (Array.isArray(res.items)) {
-          setWishlistProducts(res.items)
-        } else {
+
+        if (!Array.isArray(res.items)) {
           console.warn("⚠️ Wishlist data is not an array:", res)
           setWishlistProducts([])
+          return
         }
+
+        const enrichedWishlist: WishlistItem[] = await Promise.all(
+        res.items.map(async (item: { product_id: string }) => {
+          try {
+            const product = await productsApi.getProduct(item.product_id)
+            return {
+              product_id: item.product_id,
+              name: product.name,
+              description: product.description,
+              price: product.price,
+              image_url: Array.isArray(product?.image_urls)
+                ? product?.image_urls[0] || ""
+                : product?.image_urls || "",
+            }
+          } catch (err) {
+            console.error("❌ Failed to fetch full product data:", err)
+            return {
+              product_id: item.product_id,
+              name: "Unknown Product",
+              description: "Details not available",
+              price: 0,
+              image_url: "",
+            }
+          }
+        })
+      )
+
+
+        setWishlistProducts(enrichedWishlist)
       } catch (error) {
         console.error("❌ Failed to fetch wishlist:", error)
         setWishlistProducts([])
@@ -57,6 +89,19 @@ export default function WishlistPage() {
       console.error("❌ Failed to remove from wishlist:", error)
     } finally {
       setRemoving(null)
+    }
+  }
+
+  const handleAddToCart = async (productId: string) => {
+    try {
+      setAddingToCart(productId)
+      await cartApi.addToCart(productId, "default", "default", 1)
+      toast.success("✅ Product added to cart!")
+    } catch (err) {
+      console.error("❌ Error adding to cart:", err)
+      toast.error("Failed to add product to cart")
+    } finally {
+      setAddingToCart(null)
     }
   }
 
@@ -91,7 +136,7 @@ export default function WishlistPage() {
             ) : wishlistProducts.length === 0 ? (
               <Card>
                 <CardContent className="text-center py-16">
-                  <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <HeartOff className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                   <h2 className="text-2xl font-semibold mb-2">
                     Your wishlist is empty
                   </h2>
@@ -117,23 +162,35 @@ export default function WishlistPage() {
                       />
                     </div>
                     <CardContent className="p-4 space-y-2">
-                      <h3 className="text-lg font-semibold line-clamp-2">
-                        {product.name}
-                      </h3>
+                      <h3 className="text-lg font-semibold line-clamp-2">{product.name}</h3>
                       <p className="text-muted-foreground text-sm line-clamp-2">
                         {product.description}
                       </p>
                       <div className="font-bold text-lg">${product.price}</div>
+
+                      <div className="flex items-center justify-between gap-2 mt-4">
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={() => handleAddToCart(product.product_id)}
+                          disabled={addingToCart === product.product_id}
+                        >
+                          <ShoppingCart className="w-4 h-4 mr-2" />
+                          {addingToCart === product.product_id ? "Adding..." : "Add to Cart"}
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:bg-destructive/10"
+                          onClick={() => handleRemove(product.product_id)}
+                          disabled={removing === product.product_id}
+                          title="Remove from Wishlist"
+                        >
+                          <HeartOff className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </CardContent>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 text-destructive hover:bg-destructive/10"
-                      onClick={() => handleRemove(product.product_id)}
-                      disabled={removing === product.product_id}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
                   </Card>
                 ))}
               </div>

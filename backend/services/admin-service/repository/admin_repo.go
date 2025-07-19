@@ -1,10 +1,11 @@
 package repository
 
 import (
+	"admin-service/models"
 	"log"
 	"os"
 	"sync"
-	"admin-service/models"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -57,9 +58,14 @@ func (r *AdminRepo) ListOrders() ([]models.Order, error) {
 	return orders, err
 }
 
-func (r *AdminRepo) ListLowStockThreshold(threshold int) ([]models.Inventory, error) {
-	var items []models.Inventory
-	err := r.DB.Table("inventory").Where("quantity <= ?", threshold).Scan(&items).Error
+func (r *AdminRepo) ListLowStockThreshold(threshold int) ([]models.LowStockItem, error) {
+	var items []models.LowStockItem
+	err := r.DB.
+		Table("products").
+		Where("quantity <= ?", threshold).
+		Select("id as product_id, quantity").
+		Scan(&items).Error
+
 	return items, err
 }
 
@@ -95,3 +101,6 @@ func (r *AdminRepo) GetRecentActivity() []models.ActivityLog {
 	return clone
 }
 
+func (r *AdminRepo) DeleteUser(userID string) error {
+	return r.DB.Table("users").Where("id = ?", userID).Delete(nil).Error
+}

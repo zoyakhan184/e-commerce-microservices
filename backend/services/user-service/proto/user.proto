@@ -34,8 +34,10 @@ message UserProfile {
   string gender = 5;
   string dob = 6;
   string avatar_url = 7;
-  string role = 8; // ✅ Add this
+  string role = 8;
+  string created_at = 9;
 }
+
 
 
 

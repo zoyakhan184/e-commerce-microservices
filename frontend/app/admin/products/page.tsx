@@ -63,7 +63,9 @@ export default function AdminProductsPage() {
     image_urls: [""],
     sizes: [""],
     colors: [""],
+    quantity: "", // ✅ Add this
   })
+
 
   const {
     data: products,
@@ -104,9 +106,10 @@ console.log("Categories:", categories)
         price: Number.parseFloat(productForm.price),
         brand: productForm.brand,
         category_id: productForm.category_id,
-        image_urls: productForm.image_urls.filter((url:any) => url.trim() !== ""),
-        sizes: productForm.sizes.filter((size:any) => size.trim() !== ""),
-        colors: productForm.colors.filter((color:any) => color.trim() !== ""),
+        image_urls: productForm.image_urls.filter((url: any) => url.trim() !== ""),
+        sizes: productForm.sizes.filter((size: any) => size.trim() !== ""),
+        colors: productForm.colors.filter((color: any) => color.trim() !== ""),
+        quantity: parseInt(productForm.quantity), // ✅ Add this
       })
 
       toast({
@@ -134,10 +137,12 @@ console.log("Categories:", categories)
         price: Number.parseFloat(productForm.price),
         brand: productForm.brand,
         category_id: productForm.category_id,
-        image_urls: productForm.image_urls.filter((url:any) => url.trim() !== ""),
-        sizes: productForm.sizes.filter((size:any) => size.trim() !== ""),
-        colors: productForm.colors.filter((color:any) => color.trim() !== ""),
+        image_urls: productForm.image_urls.filter((url: any) => url.trim() !== ""),
+        sizes: productForm.sizes.filter((size: any) => size.trim() !== ""),
+        colors: productForm.colors.filter((color: any) => color.trim() !== ""),
+        quantity: parseInt(productForm.quantity), // ✅ Add this
       })
+
 
       toast({
         title: "Product updated",
@@ -187,6 +192,7 @@ console.log("Categories:", categories)
       image_urls: product.image_urls.length > 0 ? product.image_urls : [""],
       sizes: product.sizes?.length > 0 ? product.sizes : [""],
       colors: product.colors?.length > 0 ? product.colors : [""],
+      quantity: product.quantity?.toString() || "",
     })
     setIsEditDialogOpen(true)
   }
@@ -201,6 +207,7 @@ console.log("Categories:", categories)
       image_urls: [""],
       sizes: [""],
       colors: [""],
+      quantity: "", // Reset quantity
     })
   }
 
@@ -225,16 +232,36 @@ console.log("Categories:", categories)
     }))
   }
 
-  const getProductStats = () => {
-    if (!products) return { total: 0, lowStock: 0, totalValue: 0, categories: 0 }
-
-    return {
-      total: products.length,
-      lowStock: Math.floor(products.length * 0.1), // Simulate 10% low stock
-      totalValue: products.reduce((sum, p) => sum + p.price, 0),
-      categories: categories?.length || 0,
-    }
+const getProductStats = () => {
+  if (!products || products.length === 0) {
+    return { total: 0, lowStock: 0, totalValue: 0, categories: categories?.length || 0 }
   }
+
+  let total = products.length
+  let lowStock = 0
+  let totalValue = 0
+
+  products.forEach((p: any) => {
+    const quantity = typeof p.quantity === "number" ? p.quantity : parseInt(p.quantity)
+    const price = typeof p.price === "number" ? p.price : parseFloat(p.price)
+
+    if (!isNaN(quantity) && quantity > 0 && quantity <= 5) {
+      lowStock += 1
+    }
+
+    if (!isNaN(price)) {
+      totalValue += price
+    }
+  })
+
+  return {
+    total,
+    lowStock,
+    totalValue,
+    categories: categories?.length || 0,
+  }
+}
+
 
 // const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
 //   const file = e.target.files?.[0]
@@ -407,6 +434,19 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                   </Select>
                 </div>
 
+              </div>
+
+              {/* Quantity */}
+              <div className="space-y-2">
+                <Label htmlFor="quantity">Quantity</Label>
+                <Input
+                  id="quantity"
+                  type="number"
+                  min={0}
+                  value={productForm.quantity}
+                  onChange={(e) => setProductForm((prev: any) => ({ ...prev, quantity: e.target.value }))}
+                  placeholder="Enter stock quantity"
+                />
               </div>
 
               {/* Description */}
@@ -623,71 +663,105 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
                   ) : (
                     filteredProducts.length > 0 && filteredProducts?.map((product:any) => (
                       <TableRow key={product.id}>
-                        <TableCell>
-                          <div className="flex items-center space-x-3">
-                            <div className="relative h-12 w-12 flex-shrink-0">
-                              {product.image_urls?.[0] ? (
-                                <Image
-                                  src={product.image_urls[0]}
-                                  alt={product.name}
-                                  fill
-                                  className="object-cover rounded-md"
-                                />
-                              ) : (
-                                <div className="h-12 w-12 bg-gray-200 flex items-center justify-center rounded-md text-xs text-muted-foreground">
-                                  No Image
-                                </div>
-                              )}
-                            </div>
-                            <div>
-                              <p className="font-medium">{product.name}</p>
-                              <p className="text-sm text-muted-foreground">ID: {product.id}</p>
-                            </div>
+                  <TableCell>
+                    <div className="flex items-center space-x-3">
+                      <div className="relative h-12 w-12 flex-shrink-0">
+                        {product.image_urls?.[0] ? (
+                          <Image
+                            src={product.image_urls[0]}
+                            alt={product.name}
+                            fill
+                            className="object-cover rounded-md"
+                          />
+                        ) : (
+                          <div className="h-12 w-12 bg-gray-200 flex items-center justify-center rounded-md text-xs text-muted-foreground">
+                            No Image
                           </div>
-                        </TableCell>
-                        <TableCell>
-                          {categories?.find((cat) => cat.id === product.category_id)?.name || "Unknown"}
-                        </TableCell>
-                        <TableCell>{product.brand}</TableCell>
-                        <TableCell className="font-semibold">${product.price && product?.price?.toFixed(2)}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                            In Stock
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                            Active
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>
-                                <Eye className="h-4 w-4 mr-2" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => openEditDialog(product)}>
-                                <Edit className="h-4 w-4 mr-2" />
-                                Edit Product
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-red-600"
-                                onClick={() => handleDeleteProduct(product.id, product.name)}
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete Product
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-medium">{product.name}</p>
+                        <p className="text-sm text-muted-foreground">ID: {product.id}</p>
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  {/* ✅ Fixed Order Starts Here */}
+                  <TableCell>
+                    {categories?.find((cat) => cat.id === product.category_id)?.name || "Unknown"}
+                  </TableCell>
+
+                  <TableCell>{product.brand}</TableCell>
+
+                  <TableCell className="font-semibold">
+                    ${product.price ? product.price.toFixed(2) : "N/A"}
+                  </TableCell>
+
+                  <TableCell>
+                    {product.quantity > 5 ? (
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                        {product.quantity} in stock
+                      </Badge>
+                    ) : product.quantity > 0 ? (
+                      <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                        Low stock ({product.quantity})
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                        Out of stock
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {product.quantity > 5 ? (
+                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                        In Stock
+                      </Badge>
+                    ) : product.quantity > 0 ? (
+                      <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                        Low Stock
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                        Out of Stock
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                      Active
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>
+                          <Eye className="h-4 w-4 mr-2" />
+                          View Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openEditDialog(product)}>
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit Product
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-red-600"
+                          onClick={() => handleDeleteProduct(product.id, product.name)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete Product
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+
                     ))
                   )}
                 </TableBody>

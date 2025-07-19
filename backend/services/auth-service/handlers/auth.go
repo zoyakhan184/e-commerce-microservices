@@ -120,3 +120,38 @@ func (s *AuthService) ValidateToken(ctx context.Context, req *authpb.ValidateTok
 		Role:   claims.Role,
 	}, nil
 }
+
+func (s *AuthService) ChangePassword(ctx context.Context, req *authpb.ChangePasswordRequest) (*authpb.ChangePasswordResponse, error) {
+	// 1. Fetch user by ID
+	var user models.User
+	if err := s.DB.Where("id = ?", req.UserId).First(&user).Error; err != nil {
+		return nil, fmt.Errorf("user not found")
+	}
+
+	// 2. Check if current password matches
+	if !utils.CheckPasswordHash(req.CurrentPassword, user.Password) {
+		return nil, fmt.Errorf("current password is incorrect")
+	}
+
+	// 3. Hash new password
+	newHashed, err := utils.HashPassword(req.NewPassword)
+	if err != nil {
+		return nil, fmt.Errorf("failed to hash new password")
+	}
+
+	// 4. Update password in DB
+	if err := s.DB.Model(&models.User{}).Where("id = ?", user.ID).Update("password", newHashed).Error; err != nil {
+		return nil, fmt.Errorf("failed to update password")
+	}
+
+	// 5. Emit event (optional)
+	rabbitmq.Publish("auth.password_changed", map[string]interface{}{
+		"user_id": user.ID,
+		"email":   user.Email,
+	})
+
+	// 6. Respond success
+	return &authpb.ChangePasswordResponse{
+		Message: "Password updated successfully",
+	}, nil
+}

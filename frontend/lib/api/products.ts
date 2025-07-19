@@ -17,17 +17,17 @@ export const productsApi = {
       })
     }
 
-    const res = await axios.get<Product[]>(`/products?${searchParams.toString()}`)
+    const res = await axios.get<Product[]>(`api/products?${searchParams.toString()}`)
     return res.data
   },
 
   getProduct: async (id: string): Promise<Product> => {
-    const res = await axios.get<Product>(`/products/${id}`)
+    const res = await axios.get<Product>(`api/products/${id}`)
     return res.data
   },
 
   getCategories: async (): Promise<Category[]> => {
-    const res = await axios.get<Category[]>("/categories")
+    const res = await axios.get<Category[]>(`api/categories`)
     return res.data
   }
 }

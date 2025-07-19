@@ -10,12 +10,12 @@ export type CartSummaryResponse = {
 
 export const cartApi = {
   async getCart(): Promise<CartSummaryResponse> {
-    const res = await axios.get("/cart")
+    const res = await axios.get("api/cart")
     return res.data
   },
 
   async addToCart(productId: string, size: string, color: string, quantity: number): Promise<void> {
-    await axios.post("/cart", {
+    await axios.post("api/cart", {
       product_id: productId,
       size,
       color,
@@ -24,13 +24,13 @@ export const cartApi = {
   },
 
   async removeFromCart(productId: string, size: string, color: string): Promise<void> {
-    await axios.delete("/cart", {
+    await axios.delete("api/cart", {
       data: { product_id: productId, size, color },
     })
   },
 
   async updateCartItem(productId: string, size: string, color: string, quantity: number): Promise<void> {
-    await axios.put("/cart", {
+    await axios.put("api/cart", {
       product_id: productId,
       size,
       color,
@@ -39,7 +39,7 @@ export const cartApi = {
   },
 
   async clearCart(): Promise<void> {
-    await axios.delete("/cart/clear")
+    await axios.delete("api/cart/clear")
   },
 }
 

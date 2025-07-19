@@ -3,7 +3,7 @@ package models
 import "time"
 
 type Order struct {
-	ID            string    `gorm:"primaryKey"`
+	ID            string `gorm:"primaryKey"`
 	UserID        string
 	TotalAmount   float64
 	OrderStatus   string
@@ -13,11 +13,12 @@ type Order struct {
 }
 
 type OrderItem struct {
-	ID        string `gorm:"primaryKey"`
-	OrderID   string
-	ProductID string
-	Quantity  int
-	Size      string
-	Color     string
-	Price     float64
+	ID          string `gorm:"primaryKey"`
+	OrderID     string
+	ProductID   string
+	ProductName string // ✅ Add this
+	Quantity    int
+	Size        string
+	Color       string
+	Price       float64
 }

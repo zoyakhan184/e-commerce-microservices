@@ -11,6 +11,8 @@ service OrderService {
   rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse);
   rpc GenerateInvoice(GenerateInvoiceRequest) returns (GenerateInvoiceResponse);
   rpc ListAllOrders (ListAllOrdersRequest) returns (ListAllOrdersResponse);
+  rpc CancelOrder(CancelOrderRequest) returns (CancelOrderResponse);
+
 }
 
 message PlaceOrderRequest {
@@ -60,6 +62,7 @@ message Order {
   string payment_status = 4;
   double total_amount = 5;
   string created_at = 6;
+  repeated OrderItem items = 7; // ✅ New
 }
 
 message GenerateInvoiceRequest {
@@ -74,4 +77,22 @@ message ListAllOrdersRequest {}
 
 message ListAllOrdersResponse {
   repeated Order orders = 1;
+}
+
+message OrderItem {
+  string product_id = 1;
+  string product_name = 2; // populated via DB join or product lookup
+  int32 quantity = 3;       // ✅ THIS should be the actual ordered quantity
+  double price = 4;
+  string size = 5;
+  string color = 6;
+}
+
+
+message CancelOrderRequest {
+  string order_id = 1;
+}
+
+message CancelOrderResponse {
+  string status = 1;
 }

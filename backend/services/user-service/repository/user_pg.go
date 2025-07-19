@@ -120,16 +120,17 @@ func (r *PostgresUserRepo) GetAllUsersWithProfiles() ([]models.UserWithProfile, 
 	err := r.DB.
 		Table("users").
 		Select(`
-			users.id AS user_id,
-			users.name,
-			users.email,
-			COALESCE(users.role, 'user') AS role,
-			profiles.full_name,
-			profiles.phone,
-			profiles.gender,
-			profiles.dob,
-			profiles.avatar_url
-		`).
+		users.id AS user_id,
+		users.name,
+		users.email,
+		COALESCE(users.role, 'user') AS role,
+		users.created_at, -- ✅ make sure this is included
+		profiles.full_name,
+		profiles.phone,
+		profiles.gender,
+		profiles.dob,
+		profiles.avatar_url
+	`).
 		Joins("LEFT JOIN profiles ON users.id = profiles.user_id").
 		Scan(&results).Error
 

@@ -8,6 +8,8 @@ service AdminService {
   rpc ListAllUsers(Empty) returns (ListUsersResponse);
   rpc ViewAllOrders(Empty) returns (ListOrdersResponse);
   rpc GetRecentActivity(Empty) returns (RecentActivityResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse); // ✅ NEW
+
 
 }
 
@@ -21,7 +23,6 @@ message DashboardData {
 }
 
 message LowStockItem {
-  string sku_id = 1;
   string product_id = 2;
   int32 quantity = 3;
 }
@@ -61,4 +62,12 @@ message ActivityItem {
 
 message RecentActivityResponse {
   repeated ActivityItem activities = 1;
+}
+
+message DeleteUserRequest {
+  string user_id = 1;
+}
+
+message DeleteUserResponse {
+  string message = 1;
 }

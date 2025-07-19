@@ -31,6 +31,12 @@ func SetupRouter() *gin.Engine {
 	api.POST("/auth/forgot", handlers.ForgotPassword)
 	api.POST("/auth/reset", handlers.ResetPassword)
 
+	authGroup := api.Group("/auth")
+	authGroup.Use(middleware.AuthMiddleware())
+	{
+		authGroup.POST("/change-password", handlers.ChangePassword) // ✅ Secured
+	}
+
 	// Users (protected)
 	userGroup := api.Group("/users")
 	userGroup.Use(middleware.AuthMiddleware())
@@ -87,7 +93,7 @@ func SetupRouter() *gin.Engine {
 	api.POST("/products", handlers.AddProduct)
 	api.PUT("/products/:id", handlers.EditProduct)
 	api.DELETE("/products/:id", handlers.DeleteProduct)
-
+	api.GET("/products/low-stock", handlers.ListLowStockProducts) // New endpoint for low stock products
 	// Categories (public)
 	api.GET("/categories", handlers.ListCategories)
 	api.POST("/categories", handlers.AddCategory)
@@ -111,6 +117,8 @@ func SetupRouter() *gin.Engine {
 		adminGroup.GET("/orders", handlers.ListAllOrders)
 		adminGroup.GET("/activity", handlers.GetRecentActivity)
 		adminGroup.GET("/user-profiles", handlers.ListAllUserProfiles)
+		adminGroup.DELETE("/users/:userId", handlers.DeleteUser) // ✅ New delete route
+
 	}
 
 	return r
